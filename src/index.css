@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,9 +9,53 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-y: hidden;
+  background-color: #f1f5f9;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+@layer utilities {
+  @variants responsive {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+  }
+
+  .scrollbox {
+    overflow: auto;
+  
+    background:
+      /* Shadow covers */
+      linear-gradient(#f1f5f9 30%, rgba(255,255,255,0)),
+      linear-gradient(rgba(255,255,255,0),#f1f5f9 white 70%) 0 100%,
+      
+      /* Shadows */
+      radial-gradient(50% 0, farthest-side, rgba(0,0,0,.2), rgba(0,0,0,0)),
+      radial-gradient(50% 100%,farthest-side, rgba(0,0,0,.2), rgba(0,0,0,0)) 0 100%;
+    background:
+      /* Shadow covers */
+      linear-gradient(#f1f5f9 30%, rgba(255,255,255,0)),
+      linear-gradient(rgba(255,255,255,0), #f1f5f9 70%) 0 100%,
+      
+      /* Shadows */
+      radial-gradient(farthest-side at 50% 0, rgba(0,0,0,.2), rgba(0,0,0,0)),
+      radial-gradient(farthest-side at 50% 100%, rgba(0,0,0,.2), rgba(0,0,0,0)) 0 100%;
+    background-repeat: no-repeat;
+    background-color: #f1f5f9;
+    background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+    
+    /* Opera doesn't support this in the shorthand */
+    background-attachment: local, local, scroll, scroll;
+  }
 }
