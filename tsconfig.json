@@ -6,7 +6,7 @@
       "@/*": ["./src/*"],
       "@components": ["./src/components"]
     },
-    "target": "es5",
+    "target": "es6",
     "lib": [
       "dom",
       "dom.iterable",
