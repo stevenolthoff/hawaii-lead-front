@@ -44,6 +44,9 @@ function parseAsGeoJSON (): any {
       properties: {
         'point-radius': 8,
         fillColor: getColor(fixtures),
+        fillOpacity: 0.8,
+        weight: 1,
+        color: 'black',
         data
       }
     }
