@@ -18,6 +18,7 @@
         "react"
     ],
     "rules": {
+        "no-debugger": "warn",
         "indent": [
             "error",
             2

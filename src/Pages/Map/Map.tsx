@@ -1,7 +1,8 @@
-import React from 'react'
-import { Map as AxiomMap, IStyleableMapProps } from '@axdspub/axiom-maps'
+import React, { useState } from 'react'
+import { Map as AxiomMap, ILayerQueryEvent, IMapStateEvent, IStyleableMapProps } from '@axdspub/axiom-maps'
 import { Input } from '@axdspub/axiom-ui-utilities'
 import getLayer from '@/Services/MapLayer'
+import MapPopup from '@/Components/MapPopup'
 
 const Map = () => {
   const layer = getLayer()
@@ -20,6 +21,18 @@ const Map = () => {
     center: { lat: 20.57, lon: -157.47 },
     zoom: 8
   }
+
+  const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
+
+  const unselectFeature = () => {
+    console.log('click outside')
+    layer.implementation?.unsetSelectedFeature()
+    setSelectEvent(null)
+  }
+  layer.onSelect = (event) => { setSelectEvent(event); console.log(event) }
+  layer.onClickOutsideLayer = unselectFeature
+  const onMapMoveStart = unselectFeature
+  
   return (
     <div className='w-full h-full flex flex-col'>
       <div>
@@ -35,14 +48,19 @@ const Map = () => {
         </div>
       </div>
       <div className='grow flex'>
-        <div className='w-2/3 h-full'>
+        <div className='w-full h-full'>
           <AxiomMap
             {...mapConfig}
+            onMapViewChange={onMapMoveStart}
             layers={[layer]}
           />
         </div>
-        <div className='w-1/3 h-full scrollbox'>Schools</div>
       </div>
+      <MapPopup
+        windowX={selectEvent?.data?.windowPoint.x}
+        windowY={selectEvent?.data?.windowPoint.y}
+        school={selectEvent?.data?.feature?.properties?.data}
+      />
     </div>
   )
 }
