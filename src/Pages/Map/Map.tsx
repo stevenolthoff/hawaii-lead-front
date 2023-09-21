@@ -29,7 +29,6 @@ const Map = () => {
     layer.implementation?.unsetSelectedFeature()
     setSelectEvent(null)
   }
-  // layer.onSelect = (event) => { setSelectEvent(event); console.log(event) }
   layer.onClickOutsideLayer = unselectFeature
   layer.onMouseOver = setSelectEvent
   layer.onMouseOut = unselectFeature
