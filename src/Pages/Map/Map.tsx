@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Map as AxiomMap, ILayerQueryEvent, IMapStateEvent, IStyleableMapProps } from '@axdspub/axiom-maps'
+import { Map as AxiomMap, ILayerQueryEvent, IStyleableMapProps } from '@axdspub/axiom-maps'
 import { Input } from '@axdspub/axiom-ui-utilities'
 import getLayer from '@/Services/MapLayer'
 import MapPopup from '@/Components/MapPopup'
