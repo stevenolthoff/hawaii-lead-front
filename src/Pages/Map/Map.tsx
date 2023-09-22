@@ -25,7 +25,6 @@ const Map = () => {
   const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
 
   const unselectFeature = () => {
-    console.log('click outside')
     layer.implementation?.unsetSelectedFeature()
     setSelectEvent(null)
   }
