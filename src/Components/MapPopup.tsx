@@ -67,7 +67,7 @@ const MapPopup = ({
     return (
       <div
         ref={ref}
-        className='absolute bg-slate-300 z-10'
+        className='absolute z-10 px-4 py-2 rounded-md bg-slate-100 shadow-xl'
         style={{
           left: `${getLeftPx()}px`,
           top: `${getTopPx()}px`,
