@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Map as AxiomMap, ILayerQueryEvent, IStyleableMapProps } from '@axdspub/axiom-maps'
 import { Input } from '@axdspub/axiom-ui-utilities'
 import getLayer from '@/Services/MapLayer'
@@ -22,6 +22,7 @@ const Map = () => {
     zoom: 8
   }
 
+  const mapContainerRef = useRef<HTMLDivElement>(null)
   const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
 
   const unselectFeature = () => {
@@ -48,7 +49,7 @@ const Map = () => {
         </div>
       </div>
       <div className='grow flex'>
-        <div className='w-full h-full'>
+        <div className='w-full h-full' ref={mapContainerRef}>
           <AxiomMap
             {...mapConfig}
             onMapViewChange={onMapMoveStart}
@@ -57,8 +58,9 @@ const Map = () => {
         </div>
       </div>
       <MapPopup
-        windowX={selectEvent?.data?.windowPoint.x}
-        windowY={selectEvent?.data?.windowPoint.y}
+        mapViewport={mapContainerRef.current?.getBoundingClientRect()}
+        featureX={selectEvent?.data?.windowPoint.x}
+        featureY={selectEvent?.data?.windowPoint.y}
         school={selectEvent?.data?.feature?.properties?.data}
       />
     </div>

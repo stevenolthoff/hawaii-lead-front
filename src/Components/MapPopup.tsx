@@ -1,28 +1,30 @@
-import React, { ReactElement, useEffect, useRef, useState } from 'react'
+import React, { RefObject, ReactElement, useEffect, useRef, useState } from 'react'
 import { ISchool } from '@/Services/MapLayer'
 import { getNumCompleteFixtures, getNumInProgressFixtures } from '@/Services/SchoolStatus'
 
 interface IMapPopupProps {
-  windowX?: number
-  windowY?: number
+  mapViewport?: DOMRect
+  featureX?: number
+  featureY?: number
   school?: ISchool
 }
 
 const MapPopup = ({
-  windowX,
-  windowY,
+  mapViewport,
+  featureX,
+  featureY,
   school
 }: IMapPopupProps): ReactElement => {
-  const shouldShow = () => windowX !== undefined && windowY !== undefined
+  const shouldShow = () => featureX !== undefined && featureY !== undefined && mapViewport !== undefined && school !== undefined
   const [show, setShow] = useState(shouldShow())
   const ref = useRef<HTMLDivElement>(null)
   const HEIGHT_REM = 8
   const WIDTH_REM = 16
+  const PX_IN_REM = parseFloat(getComputedStyle(document.documentElement).fontSize)
+  const HEIGHT_PX = HEIGHT_REM * PX_IN_REM
+  const WIDTH_PX = WIDTH_REM * PX_IN_REM
   const POPUP_MARGIN_REM = 1
-
-  useEffect(() => {
-    setShow(shouldShow())
-  }, [windowX, windowY])
+  const POPUP_MARGIN_PX = POPUP_MARGIN_REM * PX_IN_REM
 
   const schoolName = school?.school
   const fixtures = school?.fixtures ?? []
@@ -31,16 +33,46 @@ const MapPopup = ({
   const numInProgress = getNumInProgressFixtures(fixtures)
   const numNotStarted = numFixtures - numComplete - numInProgress
 
+  useEffect(() => {
+    setShow(shouldShow())
+  }, [mapViewport, featureX, featureY, school])
+
+  const getTopPx = () => {
+    if (featureY !== undefined && mapViewport !== undefined) {
+      if ((featureY - HEIGHT_PX) < mapViewport.y) {
+        return featureY + POPUP_MARGIN_PX
+      } else {
+        return featureY - HEIGHT_PX - POPUP_MARGIN_PX
+      }
+    } else {
+      return 0
+    }
+  }
+
+  const getLeftPx = () => {
+    if (featureX !== undefined && mapViewport !== undefined) {
+      if (featureX + WIDTH_PX / 2 > mapViewport.width) {
+        return mapViewport.width - WIDTH_PX - POPUP_MARGIN_PX
+      } else if (featureX - WIDTH_PX / 2 < mapViewport.x) {
+        return POPUP_MARGIN_PX
+      } else {
+        return featureX - (WIDTH_PX / 2)
+      }
+    } else {
+      return 0
+    }
+  }
+
   if (show) {
     return (
       <div
         ref={ref}
         className='absolute bg-slate-300 z-10'
         style={{
-          left: `calc(${(windowX ?? 0)}px - ${WIDTH_REM / 2}rem)`,
-          top: `calc(${(windowY ?? 0)}px - ${HEIGHT_REM + POPUP_MARGIN_REM}rem)`,
-          height: `${HEIGHT_REM}rem`,
-          width: `${WIDTH_REM}rem`
+          left: `${getLeftPx()}px`,
+          top: `${getTopPx()}px`,
+          height: `${HEIGHT_PX}px`,
+          width: `${WIDTH_PX}px`
         }}
       >
         { schoolName }
