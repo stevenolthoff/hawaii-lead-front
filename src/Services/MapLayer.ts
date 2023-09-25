@@ -1,5 +1,5 @@
 import { IGeoJSONLayerProps } from '@axdspub/axiom-maps'
-import { APIData, Fixtures, SchoolKey } from '@/Contexts/DataContext'
+import { IAPIResponse, Fixtures, SchoolKey } from '@/Contexts/DataContext'
 
 type Progress = 'not-started' | 'in-progress' | 'complete'
 export interface ISchool {
@@ -7,7 +7,7 @@ export interface ISchool {
   fixtures: Fixtures
 }
 
-export default function getLayer (schools: APIData['bySchool']): IGeoJSONLayerProps {
+export default function getLayer (schools: IAPIResponse['bySchool']): IGeoJSONLayerProps {
   const layer: IGeoJSONLayerProps = {
     id: 'geoJson',
     type: 'geoJson',
@@ -21,7 +21,7 @@ export default function getLayer (schools: APIData['bySchool']): IGeoJSONLayerPr
   return layer
 }
 
-function parseAsGeoJSON (schools: APIData['bySchool']): any {
+function parseAsGeoJSON (schools: IAPIResponse['bySchool']): any {
   const schoolKeys = Object.keys(schools)
   return schoolKeys.map(schoolKey => {
     const school = schoolKey as SchoolKey

@@ -6,7 +6,7 @@ import '@/App.css'
 function App () {
   console.log('ENV', process.env)
   return (
-    <div className='w-screen h-screen'>
+    <div className='w-full h-full max-w-full max-h-full absolute'>
       <DataContextProvider>
         <Map />
       </DataContextProvider>

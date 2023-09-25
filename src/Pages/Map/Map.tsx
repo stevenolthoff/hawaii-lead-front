@@ -1,24 +1,21 @@
-import React, { ReactElement, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDataContext } from '@/Contexts/DataContext'
 import { Map as AxiomMap, IGeoJSONLayerProps, ILayerQueryEvent, IStyleableMapProps } from '@axdspub/axiom-maps'
 import { Input, Loader } from '@axdspub/axiom-ui-utilities'
 import getLayer from '@/Services/MapLayer'
 import MapPopup from '@/Components/MapPopup'
+import SchoolList from '@/Components/SchoolList'
 
 const Map = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null)
-  const { loading, data } = useDataContext()
+  const { data } = useDataContext()
   const [layer, setLayer] = useState<IGeoJSONLayerProps | undefined>(undefined)
   const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
-  const [x, setX] = useState(0)
-  // const [filteredSchools, setFilteredSchools] = useState<any[]>([])
-  // const [map, setMap] = useState<ReactElement | null>(null)
 
   const MAP_CONFIG: IStyleableMapProps = {
     baseLayerKey: 'hybrid',
     mapLibraryKey: 'leaflet',
     height: '100%',
-    width: '100%',
     style: {
       left: '0px',
       top: '0px',
@@ -43,8 +40,8 @@ const Map = () => {
   }, [data])
 
   return (
-    <div className='w-full h-full flex flex-col'>
-      <div>
+    <div className='w-full max-w-full h-full max-h-full flex flex-col'>
+      <div className='h-[5rem] max-h-[5rem]'>
         <div className=''>Hawaii Lead Water Monitor</div>
         <div className='flex gap-2'>
           <Input
@@ -56,8 +53,8 @@ const Map = () => {
           <div>dropdown</div>
         </div>
       </div>
-      <div className='grow flex'>
-        <div className='w-3/4 h-full' ref={mapContainerRef}>
+      <div className='flex h-[calc(100%-5rem)] max-h-[calc(100%-5rem)]'>
+        <div className='w-3/4' ref={mapContainerRef}>
           {layer === undefined ?
             <Loader /> :
             <AxiomMap
@@ -66,8 +63,8 @@ const Map = () => {
             />
           }
         </div>
-        <div className='w-1/4'>
-          {/* {filteredSchools.map((feature, i) => <div key={`thing-${i}`}>thing</div>)} */}
+        <div className='w-1/4 max-h-full'>
+          <SchoolList />
         </div>
       </div>
       <MapPopup
