@@ -4,8 +4,9 @@ import TestData from '@/data.json'
 export type Fixtures = typeof TestData.data
 export type SchoolKey = keyof typeof TestData.bySchool
 
+type Schools = Record<SchoolKey | string, IFixture[]>
 export interface IAPIResponse {
-  bySchool: Record<SchoolKey, IFixture[]>,
+  bySchool: Schools
   data: IFixture[]
 }
 
@@ -42,15 +43,29 @@ interface IFixture {
 
 interface IState {
   data: IAPIResponse | null
-  filteredSchools: Record<SchoolKey, IFixture[]> | null
+  filteredSchools: Schools | null
+  textFilter: string | null
 }
 
 const defaultState: IState = {
   data: null,
-  filteredSchools: null
+  filteredSchools: null,
+  textFilter: null
 }
 
-export const DataContext = createContext(defaultState)
+interface IDataContext {
+  data: IAPIResponse | null
+  filteredSchools: Schools | null
+  filterByText: (text: string | undefined) => void
+}
+
+const defaultContext: IDataContext = {
+  data: null,
+  filteredSchools: null,
+  filterByText: (text: string | undefined) => { console.error('IDataContext.filterByText not implemented.') }
+}
+
+const DataContext = createContext<IDataContext>(defaultContext)
 
 const delay = async (delay = 1000, callback: () => any) => {        
   const delayPromise = (ms: number) => new Promise(res => setTimeout(res, ms))
@@ -61,6 +76,7 @@ const delay = async (delay = 1000, callback: () => any) => {
 export default function DataContextProvider ({ children }: PropsWithChildren) {
   const [data, setData] = useState<IAPIResponse | null>(defaultState.data)
   const [filteredSchools, setFilteredSchools] = useState(defaultState.filteredSchools)
+  const [textFilter, setTextFilter] = useState(defaultState.textFilter)
 
   const fetchData = () => delay(750, async () => TestData)
 
@@ -75,11 +91,37 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
     setFilteredSchools(data.bySchool)
   }, [data])
 
+  useEffect(() => {
+    if (data === null) {
+      return
+    }
+    if (textFilter === null) {
+      setFilteredSchools(data.bySchool)
+    } else {
+      const cleanTextFilter = textFilter.trim().toLowerCase()
+      const results: Schools = Object.keys(data.bySchool)
+        .filter(school => schoolMatchesTextSearch(cleanTextFilter, data.bySchool[school][0]))
+        .reduce((record, key) => ( record[key] = data.bySchool[key], record ), {} as Schools)
+      setFilteredSchools(results)
+    }
+  }, [textFilter])
+
+  function filterByText (text: string | undefined) {
+    setTextFilter(text === undefined ? null : text)
+  }
+
+  function schoolMatchesTextSearch (text: string, fixture: IFixture) {
+    return fixture.school.toLowerCase().includes(text) ||
+      fixture.district.toLowerCase().includes(text) ||
+      fixture.island.toLowerCase().includes(text)
+  }
+
   return (
     <DataContext.Provider
       value={{
         data,
-        filteredSchools
+        filteredSchools,
+        filterByText
       }}
     >
       {children}
@@ -90,6 +132,6 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
 export function useDataContext () {
   const context = useContext(DataContext)
   if (context === undefined) {
-    throw new Error('useSearchContext must be used within a DataContextProvider')
+    throw new Error('useDataContext must be used within a DataContextProvider')
   } return context
 }

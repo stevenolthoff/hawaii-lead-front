@@ -8,7 +8,7 @@ import SchoolList from '@/Components/SchoolList'
 
 const Map = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null)
-  const { data } = useDataContext()
+  const { data, filterByText } = useDataContext()
   const [layer, setLayer] = useState<IGeoJSONLayerProps | undefined>(undefined)
   const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
 
@@ -48,6 +48,7 @@ const Map = () => {
             id='test'
             testId='test'
             placeholder='Search schools'
+            onChange={filterByText}
           />
           <div>dropdown</div>
           <div>dropdown</div>
