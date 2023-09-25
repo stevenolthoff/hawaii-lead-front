@@ -39,7 +39,7 @@ const MapPopup = ({
 
   const getTopPx = () => {
     if (featureY !== undefined && mapViewport !== undefined) {
-      if ((featureY - HEIGHT_PX) < mapViewport.y) {
+      if ((featureY - HEIGHT_PX - POPUP_MARGIN_PX) < mapViewport.y) {
         return featureY + POPUP_MARGIN_PX
       } else {
         return featureY - HEIGHT_PX - POPUP_MARGIN_PX

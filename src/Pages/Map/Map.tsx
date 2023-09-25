@@ -1,12 +1,20 @@
-import React, { useRef, useState } from 'react'
-import { Map as AxiomMap, ILayerQueryEvent, IStyleableMapProps } from '@axdspub/axiom-maps'
-import { Input } from '@axdspub/axiom-ui-utilities'
+import React, { ReactElement, useEffect, useRef, useState } from 'react'
+import { useDataContext } from '@/Contexts/DataContext'
+import { Map as AxiomMap, IGeoJSONLayerProps, ILayerQueryEvent, IStyleableMapProps } from '@axdspub/axiom-maps'
+import { Input, Loader } from '@axdspub/axiom-ui-utilities'
 import getLayer from '@/Services/MapLayer'
 import MapPopup from '@/Components/MapPopup'
 
 const Map = () => {
-  const layer = getLayer()
-  const mapConfig: IStyleableMapProps = {
+  const mapContainerRef = useRef<HTMLDivElement>(null)
+  const { loading, data } = useDataContext()
+  const [layer, setLayer] = useState<IGeoJSONLayerProps | undefined>(undefined)
+  const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
+  const [x, setX] = useState(0)
+  // const [filteredSchools, setFilteredSchools] = useState<any[]>([])
+  // const [map, setMap] = useState<ReactElement | null>(null)
+
+  const MAP_CONFIG: IStyleableMapProps = {
     baseLayerKey: 'hybrid',
     mapLibraryKey: 'leaflet',
     height: '100%',
@@ -22,18 +30,18 @@ const Map = () => {
     zoom: 8
   }
 
-  const mapContainerRef = useRef<HTMLDivElement>(null)
-  const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
+  useEffect(() => {
+    if (data !== null) {
+      const newLayer = getLayer(data.bySchool)
+      newLayer.onMouseOver = setSelectEvent
+      newLayer.onMouseOut = () => {
+        newLayer.implementation?.unsetSelectedFeature()
+        setSelectEvent(null)
+      }
+      setLayer(newLayer)
+    }
+  }, [data])
 
-  const unselectFeature = () => {
-    layer.implementation?.unsetSelectedFeature()
-    setSelectEvent(null)
-  }
-  layer.onClickOutsideLayer = unselectFeature
-  layer.onMouseOver = setSelectEvent
-  layer.onMouseOut = unselectFeature
-  const onMapMoveStart = unselectFeature
-  
   return (
     <div className='w-full h-full flex flex-col'>
       <div>
@@ -49,12 +57,17 @@ const Map = () => {
         </div>
       </div>
       <div className='grow flex'>
-        <div className='w-full h-full' ref={mapContainerRef}>
-          <AxiomMap
-            {...mapConfig}
-            onMapViewChange={onMapMoveStart}
-            layers={[layer]}
-          />
+        <div className='w-3/4 h-full' ref={mapContainerRef}>
+          {layer === undefined ?
+            <Loader /> :
+            <AxiomMap
+              {...MAP_CONFIG}
+              layers={[layer]}
+            />
+          }
+        </div>
+        <div className='w-1/4'>
+          {/* {filteredSchools.map((feature, i) => <div key={`thing-${i}`}>thing</div>)} */}
         </div>
       </div>
       <MapPopup
