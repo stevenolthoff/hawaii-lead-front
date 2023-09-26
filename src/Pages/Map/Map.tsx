@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDataContext } from '@/Contexts/DataContext'
-import { Map as AxiomMap, IGeoJSONLayerProps, ILayerQueryEvent, IStyleableMapProps } from '@axdspub/axiom-maps'
+import { Map as AxiomMap, IGeoJSONLayerProps, ILayerQueryEvent, IMap, IStyleableMapProps } from '@axdspub/axiom-maps'
 import { Input, Loader } from '@axdspub/axiom-ui-utilities'
 import getLayer from '@/Services/MapLayer'
 import MapPopup from '@/Components/MapPopup'
@@ -8,7 +8,8 @@ import SchoolList from '@/Components/SchoolList'
 
 const Map = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null)
-  const { data, filterByText } = useDataContext()
+  const { data, filteredSchools, filterByText } = useDataContext()
+  const [map, setMap] = useState<IMap | undefined>(undefined)
   const [layer, setLayer] = useState<IGeoJSONLayerProps | undefined>(undefined)
   const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
 
@@ -27,17 +28,23 @@ const Map = () => {
     zoom: 8
   }
 
-  useEffect(() => {
-    if (data !== null) {
-      const newLayer = getLayer(data.bySchool)
-      newLayer.onMouseOver = setSelectEvent
-      newLayer.onMouseOut = () => {
-        newLayer.implementation?.unsetSelectedFeature()
-        setSelectEvent(null)
-      }
-      setLayer(newLayer)
+  const updateLayerWithFilteredData = () => {
+    if (data === null) return
+    const dataToUse = filteredSchools === null ? data.bySchool : filteredSchools
+    const newLayer = getLayer(dataToUse)
+    newLayer.onMouseOver = setSelectEvent
+    newLayer.onMouseOut = () => {
+      newLayer.implementation?.unsetSelectedFeature()
+      setSelectEvent(null)
     }
-  }, [data])
+    setLayer(newLayer)
+  }
+
+  useEffect(updateLayerWithFilteredData, [data, filteredSchools])
+
+  useEffect(() => {
+    if (layer !== undefined) map?.reloadLayers([layer])
+  }, [layer])
 
   return (
     <div className='w-full max-w-full h-full max-h-full flex flex-col'>
@@ -60,6 +67,7 @@ const Map = () => {
             <Loader /> :
             <AxiomMap
               {...MAP_CONFIG}
+              setState={setMap}
               layers={[layer]}
             />
           }
