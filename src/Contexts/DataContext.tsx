@@ -47,7 +47,9 @@ interface IState {
   filteredSchools: Schools | null
   textFilter: string | null
   districts: string[]
+  schoolFilter: string | null
   islands: string[]
+  schools: string[]
   districtFilter: string[]
   islandFilter: string[]
 }
@@ -58,8 +60,10 @@ const defaultState: IState = {
   textFilter: null,
   districts: [],
   islands: [],
+  schools: [],
   districtFilter: [],
-  islandFilter: []
+  islandFilter: [],
+  schoolFilter: null
 }
 
 interface IDataContext {
@@ -67,9 +71,11 @@ interface IDataContext {
   filteredSchools: Schools | null
   districts: string[]
   islands: string[]
+  schools: string[]
   filterByText: (text: string | undefined) => void
   filterByDistricts: (districts: string[]) => void
   filterByIslands: (islands: string[]) => void
+  filterBySchool: (school: string | null) => void
 }
 
 const defaultContext: IDataContext = {
@@ -77,9 +83,11 @@ const defaultContext: IDataContext = {
   filteredSchools: null,
   districts: [],
   islands: [],
+  schools: [],
   filterByText: (text: string | undefined) => { console.error('IDataContext.filterByText not implemented.') },
   filterByDistricts: (districts: string[]) => { console.error('IDataContext.filterByDistricts not implemented.') },
-  filterByIslands: (islands: string[]) => { console.error('IDataContext.filterByIslands not implemented.') }
+  filterByIslands: (islands: string[]) => { console.error('IDataContext.filterByIslands not implemented.') },
+  filterBySchool: (school: string | null) => { console.error('IDataContext.filterBySchool not implemented.') }
 }
 
 const DataContext = createContext<IDataContext>(defaultContext)
@@ -96,8 +104,10 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
   const [textFilter, setTextFilter] = useState(defaultState.textFilter)
   const [districts, setDistricts] = useState(defaultState.districts)
   const [islands, setIslands] = useState(defaultState.islands)
+  const [schools, setSchools] = useState(defaultState.schools)
   const [districtFilter, setDistrictFilter] = useState(defaultState.districtFilter)
   const [islandFilter, setIslandFilter] = useState(defaultState.islandFilter)
+  const [schoolFilter, setSchoolFilter] = useState(defaultState.schoolFilter)
 
   const fetchData = () => delay(750, async () => TestData)
 
@@ -110,6 +120,7 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
   useEffect(() => {
     if (data === null) return
     setFilteredSchools(data.bySchool)
+    setSchoolsFromData(data)
     setDistrictsFromData(data)
     setIslandsFromData(data)
   }, [data])
@@ -117,17 +128,17 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
   useEffect(() => {
     if (data === null) return
     const filteredSchools = Object.keys(data.bySchool)
-      .filter((school: string) => textFilterPredicate(school))
+      .filter((school: string) => schoolFilterPredicate(school))
       .filter((school: string) => districtFilterPredicate(school))
       .filter((school: string) => islandFilterPredicate(school))
       .reduce((record, key) => ( record[key] = data.bySchool[key], record ), {} as Schools)
     setFilteredSchools(filteredSchools)
-  }, [textFilter, districtFilter, islandFilter])
+  }, [textFilter, schoolFilter, districtFilter, islandFilter])
 
-  function textFilterPredicate (school: string): boolean {
+  function schoolFilterPredicate (school: string): boolean {
     if (data === null) return false
-    if (textFilter === null) return true
-    return schoolMatchesTextSearch(getCleanTextFilter(textFilter), data.bySchool[school][0])
+    if (schoolFilter === null) return true
+    return school === schoolFilter
   }
 
   function districtFilterPredicate (school: string): boolean {
@@ -146,12 +157,20 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
     setDistricts(_.uniqBy(data.data, 'district').map(fixture => fixture.district))
   }
 
+  function setSchoolsFromData (data: IAPIResponse) {
+    setSchools(Object.keys(data.bySchool))
+  }
+
   function setIslandsFromData (data: IAPIResponse) {
     setIslands(_.uniqBy(data.data, 'island').map(fixture => fixture.island))
   }
 
   function filterByText (text: string | undefined) {
     setTextFilter(text === undefined ? null : text)
+  }
+
+  function filterBySchool (school: string | null) {
+    setSchoolFilter(school === '' ? null : school)
   }
 
   function filterByDistricts (districts: string[]) {
@@ -179,7 +198,9 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
         filteredSchools,
         districts,
         islands,
+        schools,
         filterByText,
+        filterBySchool,
         filterByDistricts,
         filterByIslands
       }}

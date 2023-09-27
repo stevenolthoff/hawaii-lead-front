@@ -2,16 +2,7 @@ import React from 'react'
 import { useDataContext } from '@/Contexts/DataContext'
 import { useState } from 'react'
 import { Combobox } from '@headlessui/react'
-import { Loader } from '@axdspub/axiom-ui-utilities'
 import { ChevronUpDownIcon } from '@heroicons/react/20/solid'
-
-const options = [
-  'Durward Reynolds',
-  'Kenton Towne',
-  'Therese Wunsch',
-  'Benedict Kessler',
-  'Katelyn Rohan',
-]
 
 interface IMapFilterProps {
   options: string[]
@@ -53,7 +44,7 @@ const MapFilter = ({ options, onSelect }: IMapFilterProps) => {
             />
           </Combobox.Button>
         </div>
-        <Combobox.Options className='absolute z-20 bg-slate-100'>
+        <Combobox.Options className='absolute z-20 bg-slate-100 max-h-40 overflow-y-scroll'>
           {filteredOptions.map((option) => (
             <Combobox.Option key={option} value={option}>
               {option}
@@ -67,11 +58,17 @@ const MapFilter = ({ options, onSelect }: IMapFilterProps) => {
 
 const MapFilters = () => {
   const {
+    schools,
     districts,
     islands,
+    filterBySchool,
     filterByDistricts,
     filterByIslands
   } = useDataContext()
+
+  const onSelectSchool = (value: string | null) => {
+    filterBySchool(value)
+  }
 
   const onSelectDistrict = (value: string | null) => {
     if (value === null) {
@@ -91,6 +88,13 @@ const MapFilters = () => {
 
   return (
     <div className='relative flex'>
+      <div>
+        <div>Schools</div>
+        <MapFilter
+          options={schools}
+          onSelect={onSelectSchool}
+        />
+      </div>
       <div>
         <div>Island</div>
         <MapFilter

@@ -51,15 +51,7 @@ const Map = () => {
     <div className='w-full max-w-full h-full max-h-full flex flex-col'>
       <div className='h-[5rem] max-h-[5rem]'>
         <div className=''>Hawaii Lead Water Monitor</div>
-        <div className='flex gap-2'>
-          <Input
-            id='test'
-            testId='test'
-            placeholder='Search schools'
-            onChange={filterByText}
-          />
-          <MapFilters />
-        </div>
+        <MapFilters />
       </div>
       <div className='flex h-[calc(100%-5rem)] max-h-[calc(100%-5rem)]'>
         <div className='w-3/4' ref={mapContainerRef}>
