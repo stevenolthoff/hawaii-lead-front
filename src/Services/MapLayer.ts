@@ -70,7 +70,7 @@ function getColor(fixtures: Fixtures) {
  * In Progress: ≥1 fixture.date_replaced != null AND not all fixtures.released_for_unrestricted_use == true
  * Not Started: 0 fixtures.date_replaced != null
  */
-function getProgress(fixtures: Fixtures): Progress {
+export function getProgress(fixtures: Fixtures): Progress {
   let notStarted = true
   let completedFixtures = 0
   for (let i = 0; i < fixtures.length; i += 1) {

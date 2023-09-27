@@ -1,9 +1,11 @@
 import React, { PropsWithChildren, createContext, useContext, useEffect, useState } from 'react'
 import _ from 'lodash'
 import TestData from '@/data.json'
+import { getProgress } from '@/Services/MapLayer'
 
 export type Fixtures = typeof TestData.data
 export type SchoolKey = keyof typeof TestData.bySchool
+export type ProgressStatus = 'Not Started' | 'In Progress' | 'Completed'
 
 type Schools = Record<SchoolKey | string, IFixture[]>
 export interface IAPIResponse {
@@ -52,6 +54,7 @@ interface IState {
   schools: string[]
   districtFilter: string[]
   islandFilter: string[]
+  statusFilter: ProgressStatus[]
 }
 
 const defaultState: IState = {
@@ -63,7 +66,8 @@ const defaultState: IState = {
   schools: [],
   districtFilter: [],
   islandFilter: [],
-  schoolFilter: null
+  schoolFilter: null,
+  statusFilter: []
 }
 
 interface IDataContext {
@@ -76,6 +80,7 @@ interface IDataContext {
   filterByDistricts: (districts: string[]) => void
   filterByIslands: (islands: string[]) => void
   filterBySchool: (school: string | null) => void
+  filterByStatus: (statuses: ProgressStatus[]) => void
 }
 
 const defaultContext: IDataContext = {
@@ -87,7 +92,8 @@ const defaultContext: IDataContext = {
   filterByText: (text: string | undefined) => { console.error('IDataContext.filterByText not implemented.') },
   filterByDistricts: (districts: string[]) => { console.error('IDataContext.filterByDistricts not implemented.') },
   filterByIslands: (islands: string[]) => { console.error('IDataContext.filterByIslands not implemented.') },
-  filterBySchool: (school: string | null) => { console.error('IDataContext.filterBySchool not implemented.') }
+  filterBySchool: (school: string | null) => { console.error('IDataContext.filterBySchool not implemented.') },
+  filterByStatus: (statuses: ProgressStatus[]) => { console.error('IDataContext.filterByStatus not implemented.') }
 }
 
 const DataContext = createContext<IDataContext>(defaultContext)
@@ -108,6 +114,7 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
   const [districtFilter, setDistrictFilter] = useState(defaultState.districtFilter)
   const [islandFilter, setIslandFilter] = useState(defaultState.islandFilter)
   const [schoolFilter, setSchoolFilter] = useState(defaultState.schoolFilter)
+  const [statusFilter, setStatusFilter] = useState(defaultState.statusFilter)
 
   const fetchData = () => delay(750, async () => TestData)
 
@@ -131,9 +138,10 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
       .filter((school: string) => schoolFilterPredicate(school))
       .filter((school: string) => districtFilterPredicate(school))
       .filter((school: string) => islandFilterPredicate(school))
+      .filter((school: string) => statusFilterPredicate(school))
       .reduce((record, key) => ( record[key] = data.bySchool[key], record ), {} as Schools)
     setFilteredSchools(filteredSchools)
-  }, [textFilter, schoolFilter, districtFilter, islandFilter])
+  }, [textFilter, schoolFilter, districtFilter, islandFilter, statusFilter])
 
   function schoolFilterPredicate (school: string): boolean {
     if (data === null) return false
@@ -151,6 +159,13 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
     if (data === null) return false
     if (islandFilter.length === 0) return true
     return islandFilter.find(island => island === data.bySchool[school][0].island) !== undefined
+  }
+
+  function statusFilterPredicate (school: string): boolean {
+    if (data === null) return false
+    if (statusFilter.length === 0) return true
+    const schoolStatus = getSchoolStatus(school)
+    return statusFilter.find(status => status === schoolStatus) !== undefined
   }
 
   function setDistrictsFromData (data: IAPIResponse) {
@@ -181,6 +196,18 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
     setIslandFilter(islands)
   }
 
+  function filterByStatus (statuses: ProgressStatus[]) {
+    setStatusFilter(statuses)
+  }
+
+  function getSchoolStatus (school: string): ProgressStatus {
+    if (data === null) return 'Not Started'
+    const progress = getProgress(data.bySchool[school])
+    if (progress === 'complete') return 'Completed'
+    if (progress === 'in-progress') return 'In Progress'
+    return 'Not Started'
+  }
+
   function getCleanTextFilter (text: string) {
     return text.trim().toLowerCase()
   }
@@ -202,7 +229,8 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
         filterByText,
         filterBySchool,
         filterByDistricts,
-        filterByIslands
+        filterByIslands,
+        filterByStatus
       }}
     >
       {children}

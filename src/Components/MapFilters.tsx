@@ -1,5 +1,5 @@
 import React from 'react'
-import { useDataContext } from '@/Contexts/DataContext'
+import { useDataContext, ProgressStatus } from '@/Contexts/DataContext'
 import { useState } from 'react'
 import { Combobox } from '@headlessui/react'
 import { ChevronUpDownIcon } from '@heroicons/react/20/solid'
@@ -63,7 +63,8 @@ const MapFilters = () => {
     islands,
     filterBySchool,
     filterByDistricts,
-    filterByIslands
+    filterByIslands,
+    filterByStatus
   } = useDataContext()
 
   const onSelectSchool = (value: string | null) => {
@@ -83,6 +84,14 @@ const MapFilters = () => {
       filterByIslands([])
     } else {
       filterByIslands([value])
+    }
+  }
+
+  const onSelectStatus = (value: string | null) => {
+    if (value === null) {
+      filterByStatus([])
+    } else {
+      filterByStatus([value as ProgressStatus])
     }
   }
 
@@ -107,6 +116,13 @@ const MapFilters = () => {
         <MapFilter
           options={districts}
           onSelect={onSelectDistrict}
+        />
+      </div>
+      <div>
+        <div>Status</div>
+        <MapFilter
+          options={['Not Started', 'In Progress', 'Completed']}
+          onSelect={onSelectStatus}
         />
       </div>
     </div>

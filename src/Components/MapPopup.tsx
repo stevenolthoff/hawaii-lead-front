@@ -80,10 +80,12 @@ const MapPopup = ({
         <p>
           { schoolName }
         </p>
-        <p className='text-xs'>{ island } / { district }</p>
-        <p>Complete { numComplete } / { numFixtures }</p>
-        <p>In Progress { numInProgress } / { numFixtures }</p>
-        <p>Not Started { numNotStarted } / { numFixtures }</p>
+        <div className='text-xs'>
+          <p className='text-xs'>{ island } / { district }</p>
+          <p>Complete { numComplete } / { numFixtures }</p>
+          <p>In Progress { numInProgress } / { numFixtures }</p>
+          <p>Not Started { numNotStarted } / { numFixtures }</p>
+        </div>
       </div>
     )
   } else {

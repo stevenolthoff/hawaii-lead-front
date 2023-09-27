@@ -9,7 +9,7 @@ const SchoolList = () => {
     return <Loader />
   } else {
     return (
-      <div className='max-h-full overflow-y-scroll'>
+      <div className='max-h-full'>
         {Object.keys(filteredSchools).map(schoolName => (
           <div key={`school-${schoolName}`}>
             {schoolName}

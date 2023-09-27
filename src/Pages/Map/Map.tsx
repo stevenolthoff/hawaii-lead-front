@@ -5,7 +5,7 @@ import { Input, Loader } from '@axdspub/axiom-ui-utilities'
 import getLayer from '@/Services/MapLayer'
 import MapFilters from '@/Components/MapFilters'
 import MapPopup from '@/Components/MapPopup'
-import SchoolList from '@/Components/SchoolList'
+import MapSidebar from '@/Components/MapSidebar'
 
 const Map = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null)
@@ -65,7 +65,7 @@ const Map = () => {
           }
         </div>
         <div className='w-1/4 max-h-full'>
-          <SchoolList />
+          <MapSidebar />
         </div>
       </div>
       <MapPopup
