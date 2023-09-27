@@ -27,6 +27,8 @@ const MapPopup = ({
   const POPUP_MARGIN_PX = POPUP_MARGIN_REM * PX_IN_REM
 
   const schoolName = school?.school
+  const district = school?.fixtures[0].district
+  const island = school?.fixtures[0].island
   const fixtures = school?.fixtures ?? []
   const numFixtures = fixtures.length
   const numComplete = getNumCompleteFixtures(fixtures)
@@ -75,7 +77,10 @@ const MapPopup = ({
           width: `${WIDTH_PX}px`
         }}
       >
-        { schoolName }
+        <p>
+          { schoolName }
+        </p>
+        <p className='text-xs'>{ island } / { district }</p>
         <p>Complete { numComplete } / { numFixtures }</p>
         <p>In Progress { numInProgress } / { numFixtures }</p>
         <p>Not Started { numNotStarted } / { numFixtures }</p>

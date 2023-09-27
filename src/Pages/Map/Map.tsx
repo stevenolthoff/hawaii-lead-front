@@ -3,6 +3,7 @@ import { useDataContext } from '@/Contexts/DataContext'
 import { Map as AxiomMap, IGeoJSONLayerProps, ILayerQueryEvent, IMap, IStyleableMapProps } from '@axdspub/axiom-maps'
 import { Input, Loader } from '@axdspub/axiom-ui-utilities'
 import getLayer from '@/Services/MapLayer'
+import MapFilters from '@/Components/MapFilters'
 import MapPopup from '@/Components/MapPopup'
 import SchoolList from '@/Components/SchoolList'
 
@@ -57,8 +58,7 @@ const Map = () => {
             placeholder='Search schools'
             onChange={filterByText}
           />
-          <div>dropdown</div>
-          <div>dropdown</div>
+          <MapFilters />
         </div>
       </div>
       <div className='flex h-[calc(100%-5rem)] max-h-[calc(100%-5rem)]'>
