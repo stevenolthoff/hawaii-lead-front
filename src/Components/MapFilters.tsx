@@ -3,6 +3,7 @@ import { useDataContext, ProgressStatus } from '@/Contexts/DataContext'
 import { useState } from 'react'
 import { Combobox } from '@headlessui/react'
 import { ChevronUpDownIcon, XCircleIcon } from '@heroicons/react/20/solid'
+import { Transition } from '@headlessui/react'
 
 interface IMapFilterProps {
   options: string[]
@@ -58,13 +59,22 @@ const MapFilter = ({ options, onSelect, placeholder }: IMapFilterProps) => {
             />
           </Combobox.Button>
         </div>
-        <Combobox.Options className='absolute z-20 mt-1 bg-slate-100 max-h-80 max-w-80 w-60 overflow-y-scroll py-2 rounded-sm text-sm no-scrollbar hover:cursor-pointer shadow-xl'>
-          {filteredOptions.map((option) => (
-            <Combobox.Option key={option} value={option} className='hover:bg-slate-200 px-4 py-2 truncate ...'>
-              {option}
-            </Combobox.Option>
-          ))}
-        </Combobox.Options>
+        <Transition
+          enter="transition-opacity duration-75"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition-opacity duration-150"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <Combobox.Options className='absolute z-20 mt-1 bg-slate-100 max-h-80 max-w-80 w-60 overflow-y-scroll py-2 rounded-sm text-sm no-scrollbar hover:cursor-pointer shadow-xl'>
+            {filteredOptions.map((option) => (
+              <Combobox.Option key={option} value={option} className='hover:bg-slate-200 px-4 py-2 truncate ...'>
+                {option}
+              </Combobox.Option>
+            ))}
+          </Combobox.Options>
+        </Transition>
       </div>
     </Combobox>
   )
