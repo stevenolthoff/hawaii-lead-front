@@ -1,7 +1,5 @@
 import { IGeoJSONLayerProps } from '@axdspub/axiom-maps'
-import { IAPIResponse, Fixtures, SchoolKey } from '@/Contexts/DataContext'
-
-type Progress = 'not-started' | 'in-progress' | 'complete'
+import { IAPIResponse, Fixtures, SchoolKey, ProgressStatus } from '@/Contexts/DataContext'
 export interface ISchool {
   school: SchoolKey
   fixtures: Fixtures
@@ -53,11 +51,11 @@ function parseAsGeoJSON (schools: IAPIResponse['bySchool']): any {
 
 function getColor(fixtures: Fixtures) {
   const progress = getProgress(fixtures)
-  if (progress === 'not-started') {
+  if (progress === 'Not Started') {
     return 'red'
-  } else if (progress === 'in-progress') {
+  } else if (progress === 'In Progress') {
     return 'yellow'
-  } else if (progress === 'complete') {
+  } else if (progress === 'Completed') {
     return 'green'
   } else {
     return 'blue'
@@ -70,7 +68,7 @@ function getColor(fixtures: Fixtures) {
  * In Progress: ≥1 fixture.date_replaced != null AND not all fixtures.released_for_unrestricted_use == true
  * Not Started: 0 fixtures.date_replaced != null
  */
-export function getProgress(fixtures: Fixtures): Progress {
+export function getProgress(fixtures: Fixtures): ProgressStatus {
   let notStarted = true
   let completedFixtures = 0
   for (let i = 0; i < fixtures.length; i += 1) {
@@ -78,15 +76,15 @@ export function getProgress(fixtures: Fixtures): Progress {
     if (notStarted && fixture.date_replaced !== null) {
       notStarted = false
     } else if (!notStarted && fixture['released_for_unrestricted_use?'] !== 'Yes') {
-      return 'in-progress'
+      return 'In Progress'
     }
     if (fixture['released_for_unrestricted_use?'] === 'Yes') {
       completedFixtures += 1
     }
   }
   if (completedFixtures === fixtures.length) {
-    return 'complete'
+    return 'Completed'
   } else {
-    return 'not-started'
+    return 'Not Started'
   }
 }

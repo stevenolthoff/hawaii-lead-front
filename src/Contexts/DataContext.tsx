@@ -7,7 +7,7 @@ export type Fixtures = typeof TestData.data
 export type SchoolKey = keyof typeof TestData.bySchool
 export type ProgressStatus = 'Not Started' | 'In Progress' | 'Completed'
 
-type Schools = Record<SchoolKey | string, IFixture[]>
+export type Schools = Record<SchoolKey | string, IFixture[]>
 export interface IAPIResponse {
   bySchool: Schools
   data: IFixture[]
@@ -202,10 +202,7 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
 
   function getSchoolStatus (school: string): ProgressStatus {
     if (data === null) return 'Not Started'
-    const progress = getProgress(data.bySchool[school])
-    if (progress === 'complete') return 'Completed'
-    if (progress === 'in-progress') return 'In Progress'
-    return 'Not Started'
+    return getProgress(data.bySchool[school])
   }
 
   function getCleanTextFilter (text: string) {

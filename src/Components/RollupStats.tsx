@@ -1,15 +1,26 @@
-import React from 'react'
-import { useDataContext } from '@/Contexts/DataContext'
+import React, { useEffect, useState } from 'react'
+import { ProgressStatus, useDataContext } from '@/Contexts/DataContext'
 import { Loader } from '@axdspub/axiom-ui-utilities'
+import { getStats } from '@/Services/RollupStats'
 
 const RollupStats = () => {
   const { filteredSchools } = useDataContext()
-  if (filteredSchools === null) {
+  const [stats, setStats] = useState<Record<ProgressStatus, number> | null>(null)
+
+  useEffect(() => {
+    if (filteredSchools === null) return
+    setStats(getStats(filteredSchools))
+  }, [filteredSchools])
+  
+  if (filteredSchools === null || stats === null) {
     return <Loader />
   } else {
     return (
       <div>
-        Count: { Object.keys(filteredSchools).length }
+        <p>Count: { Object.keys(filteredSchools).length }</p>
+        <p>Not Started: { stats['Not Started'] }</p>
+        <p>In Progress: { stats['In Progress'] }</p>
+        <p>Completed: { stats['Completed'] }</p>
       </div>
     )
   }
