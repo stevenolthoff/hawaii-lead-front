@@ -4,7 +4,7 @@ import RollupStats from '@/Components/RollupStats'
 
 const MapSidebar = () => {
   return (
-    <div className='max-h-full overflow-y-scroll'>
+    <div className='max-h-full h-full overflow-y-scroll px-4 py-2 text-sm shadow-xl scrollbox'>
       <div className=''>
         <RollupStats />
       </div>

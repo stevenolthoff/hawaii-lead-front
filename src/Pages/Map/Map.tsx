@@ -49,11 +49,14 @@ const Map = () => {
 
   return (
     <div className='w-full max-w-full h-full max-h-full flex flex-col'>
-      <div className='h-[5rem] max-h-[5rem]'>
-        <div className=''>Hawaii Lead Water Monitor</div>
+      <div className='h-[6rem] max-h-[6rem] flex flex-col divide-y border-b border-slate-200'>
+        <div className='flex px-4 py-2 w-full text-center'>
+          <img src='/DOH-Logo-with-text-circling.png' width='40' />
+          <div className='px-4 py-2 font-semibold text-slate-800 text-center w-full'>Hawaii Lead Water Monitor</div>
+        </div>
         <MapFilters />
       </div>
-      <div className='flex h-[calc(100%-5rem)] max-h-[calc(100%-5rem)]'>
+      <div className='flex h-[calc(100%-6rem)] max-h-[calc(100%-6rem)]'>
         <div className='w-3/4' ref={mapContainerRef}>
           {layer === undefined ?
             <Loader /> :

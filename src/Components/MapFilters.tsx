@@ -2,13 +2,14 @@ import React from 'react'
 import { useDataContext, ProgressStatus } from '@/Contexts/DataContext'
 import { useState } from 'react'
 import { Combobox } from '@headlessui/react'
-import { ChevronUpDownIcon } from '@heroicons/react/20/solid'
+import { ChevronUpDownIcon, XCircleIcon } from '@heroicons/react/20/solid'
 
 interface IMapFilterProps {
   options: string[]
   onSelect: (options: string | null) => void
+  placeholder: string
 }
-const MapFilter = ({ options, onSelect }: IMapFilterProps) => {
+const MapFilter = ({ options, onSelect, placeholder }: IMapFilterProps) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [query, setQuery] = useState('')
 
@@ -24,6 +25,15 @@ const MapFilter = ({ options, onSelect }: IMapFilterProps) => {
     onSelect(value)
   }
 
+  const ClearButtonOrNull = () => {
+    return selectedOption !== null ?
+      <XCircleIcon
+        className='h-5 w-5 absolute right-0 mr-2 text-slate-400 bg-white'
+        onClick={() => onChange(null)}
+      /> :
+      null
+  }
+
   return (
     <Combobox
       disabled={options.length === 0}
@@ -33,20 +43,24 @@ const MapFilter = ({ options, onSelect }: IMapFilterProps) => {
     >
       <div className='z-20 bg-slate-100'>
         <div className='flex'>
-          <Combobox.Input
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder='All'
-          />
+          <Combobox.Button className='flex items-center relative'>
+            <Combobox.Input
+              className='px-4 py-2 rounded-sm h-8 text-xs'
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={placeholder}
+            /> 
+            <ClearButtonOrNull />
+          </Combobox.Button>
           <Combobox.Button className="inset-y-0 right-0 flex items-center pr-2">
             <ChevronUpDownIcon
-              className="h-5 w-5 text-gray-400"
+              className="h-5 w-5 text-slate-400"
               aria-hidden="true"
             />
           </Combobox.Button>
         </div>
-        <Combobox.Options className='absolute z-20 bg-slate-100 max-h-40 overflow-y-scroll'>
+        <Combobox.Options className='absolute z-20 mt-1 bg-slate-100 max-h-80 max-w-80 w-60 overflow-y-scroll py-2 rounded-sm text-sm no-scrollbar hover:cursor-pointer shadow-xl'>
           {filteredOptions.map((option) => (
-            <Combobox.Option key={option} value={option}>
+            <Combobox.Option key={option} value={option} className='hover:bg-slate-200 px-4 py-2 truncate ...'>
               {option}
             </Combobox.Option>
           ))}
@@ -96,35 +110,27 @@ const MapFilters = () => {
   }
 
   return (
-    <div className='relative flex'>
-      <div>
-        <div>Schools</div>
-        <MapFilter
-          options={schools}
-          onSelect={onSelectSchool}
-        />
-      </div>
-      <div>
-        <div>Island</div>
-        <MapFilter
-          options={islands}
-          onSelect={onSelectIsland}
-        />
-      </div>
-      <div>
-        <div>District</div>
-        <MapFilter
-          options={districts}
-          onSelect={onSelectDistrict}
-        />
-      </div>
-      <div>
-        <div>Status</div>
-        <MapFilter
-          options={['Not Started', 'In Progress', 'Completed']}
-          onSelect={onSelectStatus}
-        />
-      </div>
+    <div className='relative flex px-4 h-full items-center'>
+      <MapFilter
+        options={schools}
+        onSelect={onSelectSchool}
+        placeholder='Schools'
+      />
+      <MapFilter
+        options={islands}
+        onSelect={onSelectIsland}
+        placeholder='Island'
+      />
+      <MapFilter
+        options={districts}
+        onSelect={onSelectDistrict}
+        placeholder='District'
+      />
+      <MapFilter
+        options={['Not Started', 'In Progress', 'Completed']}
+        onSelect={onSelectStatus}
+        placeholder='Status'
+      />
     </div>
   )
 
