@@ -1,6 +1,7 @@
 import React, { RefObject, ReactElement, useEffect, useRef, useState } from 'react'
 import { ISchool } from '@/Services/MapLayer'
 import { getNumCompleteFixtures, getNumInProgressFixtures } from '@/Services/SchoolStatus'
+import SchoolSummaryCard from './SchoolSummaryCard'
 
 interface IMapPopupProps {
   mapViewport?: DOMRect
@@ -27,13 +28,6 @@ const MapPopup = ({
   const POPUP_MARGIN_PX = POPUP_MARGIN_REM * PX_IN_REM
 
   const schoolName = school?.school
-  const district = school?.fixtures[0].district
-  const island = school?.fixtures[0].island
-  const fixtures = school?.fixtures ?? []
-  const numFixtures = fixtures.length
-  const numComplete = getNumCompleteFixtures(fixtures)
-  const numInProgress = getNumInProgressFixtures(fixtures)
-  const numNotStarted = numFixtures - numComplete - numInProgress
 
   useEffect(() => {
     setShow(shouldShow())
@@ -69,7 +63,7 @@ const MapPopup = ({
     return (
       <div
         ref={ref}
-        className='absolute z-10 px-4 py-2 rounded-md bg-slate-100 shadow-xl'
+        className='absolute z-10 px-4 py-2 rounded-md bg-slate-100 shadow-xl flex justify-center items-center'
         style={{
           left: `${getLeftPx()}px`,
           top: `${getTopPx()}px`,
@@ -77,15 +71,7 @@ const MapPopup = ({
           width: `${WIDTH_PX}px`
         }}
       >
-        <p>
-          { schoolName }
-        </p>
-        <div className='text-xs'>
-          <p className='text-xs'>{ island } / { district }</p>
-          <p>Complete { numComplete } / { numFixtures }</p>
-          <p>In Progress { numInProgress } / { numFixtures }</p>
-          <p>Not Started { numNotStarted } / { numFixtures }</p>
-        </div>
+        <SchoolSummaryCard schoolName={schoolName ?? ''} />
       </div>
     )
   } else {

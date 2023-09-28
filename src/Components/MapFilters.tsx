@@ -73,6 +73,11 @@ const MapFilter = ({ options, onSelect, placeholder }: IMapFilterProps) => {
                 {option}
               </Combobox.Option>
             ))}
+            {
+              filteredOptions.length === 0 ?
+                <p className='px-4 py-2 text-xs text-slate-500'>No schools found</p> :
+                <></>
+            }
           </Combobox.Options>
         </Transition>
       </div>

@@ -1,5 +1,6 @@
 import { IGeoJSONLayerProps } from '@axdspub/axiom-maps'
 import { IAPIResponse, Fixtures, SchoolKey, ProgressStatus } from '@/Contexts/DataContext'
+import { getColorForStatus } from './SchoolStatus'
 export interface ISchool {
   school: SchoolKey
   fixtures: Fixtures
@@ -50,16 +51,7 @@ function parseAsGeoJSON (schools: IAPIResponse['bySchool']): any {
 }
 
 function getColor(fixtures: Fixtures) {
-  const progress = getProgress(fixtures)
-  if (progress === 'Not Started') {
-    return 'red'
-  } else if (progress === 'In Progress') {
-    return 'yellow'
-  } else if (progress === 'Completed') {
-    return 'green'
-  } else {
-    return 'blue'
-  }
+  return getColorForStatus(getProgress(fixtures))
 }
 
 /**

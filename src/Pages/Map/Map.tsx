@@ -1,18 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDataContext } from '@/Contexts/DataContext'
 import { Map as AxiomMap, IGeoJSONLayerProps, ILayerQueryEvent, IMap, IStyleableMapProps } from '@axdspub/axiom-maps'
-import { Input, Loader } from '@axdspub/axiom-ui-utilities'
+import { Loader } from '@axdspub/axiom-ui-utilities'
 import getLayer from '@/Services/MapLayer'
 import MapFilters from '@/Components/MapFilters'
 import MapPopup from '@/Components/MapPopup'
 import MapSidebar from '@/Components/MapSidebar'
+import { useMapPreviewContext } from '@/Contexts/MapPreviewContext'
 
 const Map = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null)
-  const { data, filteredSchools, filterByText } = useDataContext()
+  const { data, filteredSchools } = useDataContext()
   const [map, setMap] = useState<IMap | undefined>(undefined)
   const [layer, setLayer] = useState<IGeoJSONLayerProps | undefined>(undefined)
   const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
+  const { school } = useMapPreviewContext()
 
   const MAP_CONFIG: IStyleableMapProps = {
     baseLayerKey: 'hybrid',
