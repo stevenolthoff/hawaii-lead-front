@@ -7,7 +7,7 @@ const SchoolList = () => {
   const { filteredSchools } = useDataContext()
 
   if (filteredSchools === null) {
-    return <Loader />
+    return <></>
   } else {
     return (
       <div className='max-h-full flex flex-col gap-2'>

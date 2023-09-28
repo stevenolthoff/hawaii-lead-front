@@ -63,7 +63,7 @@ const Map = () => {
       <div className='flex h-[calc(100%-6rem)] max-h-[calc(100%-6rem)]'>
         <div className='w-3/4' ref={mapContainerRef}>
           {layer === undefined ?
-            <Loader /> :
+            <div className='w-full h-full flex justify-center items-center bg-slate-200 animate-pulse'><Loader /></div> :
             <AxiomMap
               {...MAP_CONFIG}
               setState={setMap}

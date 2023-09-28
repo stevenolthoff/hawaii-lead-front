@@ -13,7 +13,7 @@ const RollupStats = () => {
   }, [filteredSchools])
   
   if (filteredSchools === null || stats === null) {
-    return <Loader />
+    return <></>
   } else {
     return (
       <div>

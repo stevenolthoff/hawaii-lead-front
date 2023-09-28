@@ -9,8 +9,9 @@ interface IMapFilterProps {
   options: string[]
   onSelect: (options: string | null) => void
   placeholder: string
+  disabled?: boolean
 }
-const MapFilter = ({ options, onSelect, placeholder }: IMapFilterProps) => {
+const MapFilter = ({ options, onSelect, placeholder, disabled }: IMapFilterProps) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [query, setQuery] = useState('')
 
@@ -37,7 +38,7 @@ const MapFilter = ({ options, onSelect, placeholder }: IMapFilterProps) => {
 
   return (
     <Combobox
-      disabled={options.length === 0}
+      disabled={options.length === 0 || disabled}
       value={selectedOption}
       onChange={onChange}
       nullable
@@ -145,6 +146,7 @@ const MapFilters = () => {
         options={['Not Started', 'In Progress', 'Completed']}
         onSelect={onSelectStatus}
         placeholder='Status'
+        disabled={schools.length === 0}
       />
     </div>
   )
