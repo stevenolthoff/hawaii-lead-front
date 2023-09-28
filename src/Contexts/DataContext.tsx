@@ -13,7 +13,7 @@ export interface IAPIResponse {
   data: IFixture[]
 }
 
-interface IFixture {
+export interface IFixture {
   'school': string
   'district': string
   'island': string

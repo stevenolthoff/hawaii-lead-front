@@ -10,7 +10,7 @@ const SchoolList = () => {
     return <></>
   } else {
     return (
-      <div className='max-h-full flex flex-col gap-2'>
+      <div className='flex flex-col gap-2 py-4'>
         {Object.keys(filteredSchools).map(schoolName => (
           <div
             key={`school-summary-card-${schoolName}`}

@@ -23,9 +23,9 @@ const MapSidebar = () => {
         leave="transition-opacity duration-150"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
-
+        className='h-full scrollbox shadow-xl'
       >
-        <div className='max-h-full h-full overflow-y-scroll px-4 py-2 text-sm shadow-xl scrollbox'>
+        <div className='max-h-full h-full px-4 py-2 text-sm'>
           <div className=''>
             <RollupStats />
           </div>

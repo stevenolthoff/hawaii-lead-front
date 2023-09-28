@@ -33,6 +33,9 @@ const SchoolSummaryCard = ({ schoolName }: ISchoolSummaryCardProps) => {
       <p className='text-xs text-slate-500'>{island} / {district} </p>
       <table className='w-full text-xs leading-tight'>
         <tbody>
+          <tr>
+            <td></td><td className='text-right'>Fixtures</td>
+          </tr>
           <tr className='bg-slate-200'>
             <td>Not Started</td><td className='text-right'>{numNotStarted} / {total}</td>
           </tr>

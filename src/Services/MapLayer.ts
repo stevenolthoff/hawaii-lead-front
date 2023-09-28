@@ -61,6 +61,7 @@ function getColor(fixtures: Fixtures) {
  * Not Started: 0 fixtures.date_replaced != null
  */
 export function getProgress(fixtures: Fixtures): ProgressStatus {
+  // if (fixtures[0].school === 'Waihee Elementary') debugger
   let notStarted = true
   let completedFixtures = 0
   for (let i = 0; i < fixtures.length; i += 1) {
@@ -76,6 +77,8 @@ export function getProgress(fixtures: Fixtures): ProgressStatus {
   }
   if (completedFixtures === fixtures.length) {
     return 'Completed'
+  } else if (completedFixtures > 0) {
+    return 'In Progress'
   } else {
     return 'Not Started'
   }
