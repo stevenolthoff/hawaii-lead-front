@@ -1,3 +1,7 @@
+/**
+ * clean this whole thing up
+ */
+
 import React, { useEffect, useState, ReactElement, useRef } from 'react'
 import { ProgressStatus, useDataContext } from '@/Contexts/DataContext'
 import { Loader } from '@axdspub/axiom-ui-utilities'
