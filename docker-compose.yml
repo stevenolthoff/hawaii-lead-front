@@ -1,0 +1,8 @@
+services:
+  app:
+    image: hawaii-lead-front:latest
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8787:80"

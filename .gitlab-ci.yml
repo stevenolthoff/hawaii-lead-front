@@ -1,0 +1,70 @@
+stages:
+  - build
+  - test
+  - push
+  - clean
+  - deploy
+
+build_image:
+  stage: build
+  script:
+  - docker build -f Dockerfile -t $CI_PROJECT_NAME:$CI_PIPELINE_ID .
+
+test:
+  stage: test
+  image: $CI_PROJECT_NAME:$CI_PIPELINE_ID
+  script:
+    - test -e /usr/share/nginx/html/index.html
+    - test -e /usr/share/nginx/html/asset-manifest.json
+
+push_latest:
+  stage: push
+  only:
+    - main
+  script:
+    - docker tag $CI_PROJECT_NAME:$CI_PIPELINE_ID registry.axiom/$CI_PROJECT_NAME:latest
+    - docker push registry.axiom/$CI_PROJECT_NAME:latest
+
+push_branch:
+  stage: push
+  only:
+    - branches
+  except:
+    - main
+  script:
+    - docker tag $CI_PROJECT_NAME:$CI_PIPELINE_ID registry.axiom/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
+    - docker push registry.axiom/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
+
+push_tag:
+  stage: push
+  only:
+    - tags
+  script:
+    - docker tag $CI_PROJECT_NAME:$CI_PIPELINE_ID registry.axiom/$CI_PROJECT_NAME:$CI_BUILD_TAG
+    - docker push registry.axiom/$CI_PROJECT_NAME:$CI_BUILD_TAG
+    - docker tag $CI_PROJECT_NAME:$CI_PIPELINE_ID registry.axiom/$CI_PROJECT_NAME:prod
+    - docker push registry.axiom/$CI_PROJECT_NAME:prod
+
+clean_latest:
+  stage: clean
+  only:
+    - main
+  script:
+    - docker rmi --no-prune $CI_PROJECT_NAME:$CI_PIPELINE_ID
+    - docker rmi --no-prune registry.axiom/$CI_PROJECT_NAME:latest
+
+clean_tag:
+  stage: clean
+  only:
+    - tags
+  script:
+    - docker rmi --no-prune $CI_PROJECT_NAME:$CI_PIPELINE_ID
+    - docker rmi --no-prune registry.axiom/$CI_PROJECT_NAME:$CI_BUILD_TAG
+    - docker rmi --no-prune registry.axiom/$CI_PROJECT_NAME:prod
+
+deploy_app:
+  stage: deploy
+  only:
+    - main
+  script:
+    - aps apps-stage hawaii-lead-front
