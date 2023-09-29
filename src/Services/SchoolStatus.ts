@@ -17,11 +17,11 @@ function getNumInProgressFixtures (fixtures: Fixtures): number {
 
 function getColorForStatus (status: ProgressStatus): string {
   if (status === 'Not Started') {
-    return 'red'
+    return '#ef4444'
   } else if (status === 'In Progress') {
-    return 'yellow'
+    return '#eab308'
   } else if (status === 'Completed') {
-    return 'green'
+    return '#22c55e'
   } else {
     return 'blue'
   }

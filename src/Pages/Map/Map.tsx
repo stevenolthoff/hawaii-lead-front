@@ -61,7 +61,7 @@ const Map = () => {
         <MapFilters />
       </div>
       <div className='flex h-[calc(100%-6rem)] max-h-[calc(100%-6rem)]'>
-        <div className='w-3/4' ref={mapContainerRef}>
+        <div className='w-2/3' ref={mapContainerRef}>
           {layer === undefined ?
             <div className='w-full h-full flex justify-center items-center bg-slate-200 animate-pulse'><Loader /></div> :
             <AxiomMap
@@ -71,7 +71,7 @@ const Map = () => {
             />
           }
         </div>
-        <div className='w-1/4 max-h-full'>
+        <div className='w-1/3 max-h-full'>
           <MapSidebar />
         </div>
       </div>
