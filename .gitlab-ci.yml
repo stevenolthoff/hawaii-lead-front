@@ -67,4 +67,4 @@ deploy_app:
   only:
     - main
   script:
-    - aps apps-stage hawaii-lead-front
+    - aps apps-stage hawaii-lead

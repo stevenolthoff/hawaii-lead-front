@@ -1,6 +1,6 @@
 services:
   app:
-    image: hawaii-lead-front:latest
+    image: hawaii-lead:latest
     build:
       context: ./
       dockerfile: Dockerfile
