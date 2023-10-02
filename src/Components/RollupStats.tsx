@@ -59,7 +59,7 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete, containerPxWidt
       bottom: 0,
       left: 2
     }
-    const width = containerPxWidth ?? 200
+    const width = containerPxWidth ?? 100
     const w = width - margin.left - margin.right
     const h = height * 0.66
     // const colors = ['#ef4444', '#eab308', '#22c55e']
@@ -134,8 +134,8 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete, containerPxWidt
       .attr('text-anchor', 'middle')
       .attr('x', d => xScale(d.cumulative) + (xScale(d.value) / 2))
       .attr('y', (h / 2) - (halfBarHeight * 1.1))
-      .style('font-size', '.75rem')
-      .text(d => f(d.percent) + ' %')
+      .style('font-size', '.7rem')
+      .text(d => f(d.percent) + '%')
   }
 
   useEffect(drawChart, [containerPxWidth, notStarted, inProgress, complete])

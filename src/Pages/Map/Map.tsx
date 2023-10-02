@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useDataContext } from '@/Contexts/DataContext'
 import { Map as AxiomMap, IGeoJSONLayerProps, ILayerQueryEvent, IMap, IStyleableMapProps } from '@axdspub/axiom-maps'
 import { Loader } from '@axdspub/axiom-ui-utilities'
-import getLayer from '@/Services/MapLayer'
+import getLayer, { ISchool } from '@/Services/MapLayer'
 import MapFilters from '@/Components/MapFilters'
 import MapPopup from '@/Components/MapPopup'
 import MapSidebar from '@/Components/MapSidebar'
 import { useMapPreviewContext } from '@/Contexts/MapPreviewContext'
+import School from '@/Pages/School/School'
 
 const Map = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null)
@@ -14,6 +15,7 @@ const Map = () => {
   const [map, setMap] = useState<IMap | undefined>(undefined)
   const [layer, setLayer] = useState<IGeoJSONLayerProps | undefined>(undefined)
   const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
+  const [clickedSchool, setClickedSchool]= useState<ISchool | null>(null)
   const { school } = useMapPreviewContext()
 
   const MAP_CONFIG: IStyleableMapProps = {
@@ -39,6 +41,9 @@ const Map = () => {
     newLayer.onMouseOut = () => {
       setSelectEvent(null)
       newLayer.implementation?.unsetSelectedFeature()
+    }
+    newLayer.onSelect = (event: ILayerQueryEvent) => {
+      setClickedSchool(event.data?.feature?.properties?.data ?? null)
     }
     setLayer(newLayer)
   }
@@ -82,6 +87,12 @@ const Map = () => {
           featureX={selectEvent?.data?.windowPoint.x}
           featureY={selectEvent?.data?.windowPoint.y}
           school={selectEvent?.data?.feature?.properties?.data}
+        />
+      }
+      {clickedSchool === null ?
+        <></> :
+        <School
+          onClickOutside={event => setClickedSchool(null)}
         />
       }
     </div>
