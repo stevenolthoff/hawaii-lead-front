@@ -1,9 +1,9 @@
 import { IGeoJSONLayerProps } from '@axdspub/axiom-maps'
-import { IAPIResponse, Fixtures, SchoolKey, ProgressStatus } from '@/Contexts/DataContext'
+import { IAPIResponse, Fixtures, SchoolKey, ProgressStatus, IFixture } from '@/Contexts/DataContext'
 import { getColorForStatus } from './SchoolStatus'
 export interface ISchool {
   school: SchoolKey
-  fixtures: Fixtures
+  fixtures: IFixture[]
 }
 
 export default function getLayer (schools: IAPIResponse['bySchool']): IGeoJSONLayerProps {

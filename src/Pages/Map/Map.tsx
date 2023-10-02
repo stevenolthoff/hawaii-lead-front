@@ -92,7 +92,8 @@ const Map = () => {
       {clickedSchool === null ?
         <></> :
         <School
-          onClickOutside={event => setClickedSchool(null)}
+          onClickOutside={() => setClickedSchool(null)}
+          school={clickedSchool}
         />
       }
     </div>
