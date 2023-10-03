@@ -58,4 +58,12 @@ code {
     /* Opera doesn't support this in the shorthand */
     background-attachment: local, local, scroll, scroll;
   }
+
+  .tooltip {
+    @apply invisible absolute;
+  }
+  
+  .has-tooltip:hover .tooltip {
+    @apply visible z-50;
+  }
 }

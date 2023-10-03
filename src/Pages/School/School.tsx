@@ -6,6 +6,7 @@ import StackedBarChart from '@/Components/StackedBarChart'
 import { getNumCompleteFixtures, getNumInProgressFixtures } from '@/Services/SchoolStatus'
 import { XMarkIcon, CheckIcon } from '@heroicons/react/20/solid'
 import { IFixture } from '@/Contexts/DataContext'
+import { DateTime } from 'luxon'
 
 interface IStepperProps {
   id: string
@@ -60,8 +61,8 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
     if (i === data.length - 1 && filled) {
       bubbleStyle = {
         ...bubbleStyle,
-        width: '1.25rem',
-        height: '1.25rem'
+        width: '1.4rem',
+        height: '1.4rem'
       }
     }
     return (
@@ -70,7 +71,14 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
         className='relative w-full flex justify-center items-center'
       >
         <div className='absolute w-1/2 h-0.5 right-1/2 shadow-inner' style={{ visibility: i === 0 ? 'hidden' : 'visible', ...leftLineStyle }}></div>
-        <div className='rounded-full w-3 h-3 z-20 shadow-inner border bg-slate-100' style={bubbleStyle}>
+        <div className='relative rounded-full w-4 h-4 z-20 shadow-inner border bg-slate-100 has-tooltip' style={bubbleStyle}>
+          {
+            d.tooltip === undefined ?
+              null :
+              <span className='tooltip rounded shadow-lg p-2 bg-gray-100 text-slate-800 block grow -mt-[35px] self-center text-sm'>
+                {d.tooltip}
+              </span>
+          }
           <CheckIcon className='text-slate-100' style={{ visibility: filled && i === data.length - 1 ? 'visible' : 'hidden' }}/>
         </div>
         <div className='absolute w-1/2 h-0.5 left-1/2 shadow-inner' style={{ visibility: i === data.length - 1 ? 'hidden' : 'visible', ...rightLineStyle }}></div>
@@ -106,7 +114,7 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
           <></> :
           <StackedBarChart
             id={`stacked-bar-chart-school-${school?.school.toLowerCase().replace(' ', '-')}`}
-            width={cardRef.current.clientWidth}
+            width={cardRef.current.clientWidth - 32}
             notStarted={numNotStarted}
             inProgress={numInProgress}
             complete={numComplete}
@@ -114,9 +122,12 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
       }
     </div>
   }
-  const tableHeaderClassName = 'text-xs leading-none font-semibold text-slate-500'
+  const tableHeaderClassName = 'text-xs leading-none font-semibold text-slate-500 pb-2 break-words'
   const bubbleIsFilled = (fixture: IFixture, key: string): boolean => {
     return fixture[key] !== null && String(fixture[key]).toLowerCase() !== 'no'
+  }
+  const getFormattedDate = (value: string | null) => {
+    return value === null ? undefined : DateTime.fromISO(value).toLocaleString({ dateStyle: 'medium' })
   }
   return (
     <div
@@ -125,7 +136,7 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
     >
       <div
         ref={cardRef}
-        className='w-1/2 max-w-1/2 h-full max-h-full bg-slate-100 py-4 overflow-y-scroll hover:cursor-default scrollbox'
+        className='w-[80%] max-w-[80%] h-full max-h-full bg-slate-100 py-4 px-4 pb-16 overflow-y-scroll hover:cursor-default scrollbox'
         style={{
         }}
         onClick={onClickInside}
@@ -150,42 +161,49 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
           <div className={tableHeaderClassName + ' text-center'}>Released</div>
 
           {
-            school?.fixtures.map((fixture, i) => [
-              <div
-                key={`school-${school}-fixture-${i}-room-no`}
-                className='text-sm'
-              >
-                {fixture.room_no}
-              </div>,
-              <div
-                key={`school-${school}-fixture-${i}-source-type`}
-                className='text-sm truncate ... text-center'
-              >
-                {fixture.source_type}
-              </div>,
-              <Stepper
-                key={`school-${school}-stepper-${i}`}
-                id={school?.school}
-                className='col-span-5'
-                data={[
-                  {
-                    filled: bubbleIsFilled(fixture, 'date_replacement_scheduled'),
-                  },
-                  {
-                    filled: bubbleIsFilled(fixture, 'date_replaced')
-                  },
-                  {
-                    filled: bubbleIsFilled(fixture, 'confirmation_sample_collection_date')
-                  },
-                  {
-                    filled: bubbleIsFilled(fixture, 'date_results_received')
-                  },
-                  {
-                    filled: bubbleIsFilled(fixture, 'released_for_unrestricted_use?')
-                  }
-                ]}
-              />
-            ])
+            school?.fixtures.map((fixture, i) => (
+              <div key={i} className='contents group'>
+                <div
+                  key={`school-${school}-fixture-${i}-room-no`}
+                  className='text-sm group-hover:bg-slate-200 p-2'
+                >
+                  {fixture.room_no}
+                </div>
+                <div
+                  key={`school-${school}-fixture-${i}-source-type`}
+                  className='text-sm truncate ... text-center group-hover:bg-slate-200 p-2'
+                >
+                  {fixture.source_type}
+                </div>
+                <Stepper
+                  key={`school-${school}-stepper-${i}`}
+                  id={school?.school}
+                  className='col-span-5 group-hover:bg-slate-200'
+                  data={[
+                    {
+                      filled: bubbleIsFilled(fixture, 'date_replacement_scheduled'),
+                      tooltip: getFormattedDate(fixture['date_replacement_scheduled'])
+                    },
+                    {
+                      filled: bubbleIsFilled(fixture, 'date_replaced'),
+                      tooltip: getFormattedDate(fixture['date_replaced'])
+                    },
+                    {
+                      filled: bubbleIsFilled(fixture, 'confirmation_sample_collection_date'),
+                      tooltip: getFormattedDate(fixture['confirmation_sample_collection_date'])
+                    },
+                    {
+                      filled: bubbleIsFilled(fixture, 'date_results_received'),
+                      tooltip: getFormattedDate(fixture['date_results_received'])
+                    },
+                    {
+                      filled: bubbleIsFilled(fixture, 'released_for_unrestricted_use?'),
+                      tooltip: fixture['released_for_unrestricted_use?']
+                    }
+                  ]}
+                />
+              </div>
+            ))
           }
         </div>
       </div>
