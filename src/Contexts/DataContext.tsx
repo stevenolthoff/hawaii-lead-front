@@ -42,6 +42,7 @@ export interface IFixture {
   'replaced_fixtures_photo_url': any | null
   'x': string
   'y': string
+  [key: string]: any
 }
 
 interface IState {

@@ -4,28 +4,67 @@ import { ISchool } from '@/Services/MapLayer'
 import BubbleLegend from '@/Components/BubbleLegend'
 import StackedBarChart from '@/Components/StackedBarChart'
 import { getNumCompleteFixtures, getNumInProgressFixtures } from '@/Services/SchoolStatus'
-import { XMarkIcon } from '@heroicons/react/20/solid'
+import { XMarkIcon, CheckIcon } from '@heroicons/react/20/solid'
 import { IFixture } from '@/Contexts/DataContext'
 
 interface IStepperProps {
   id: string
   className?: string
-  data?: {
+  data: {
     tooltip?: string,
     filled: boolean
   }[]
 }
 
 const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
-  const steps = data?.map((d, i) => {
+  const slate100 = '#f1f5f9'
+  const slate300 = '#cbd5e1'
+  const blue500 = '#3b82f6'
+  const green500 = '#22c55e'
+  const red500 = '#ef4444'
+  const yellow500 = '#eab308'
+  let completelyFilled = false
+  let indexOfFinalFilled: number | undefined = undefined
+  for (let i = data.length - 1; i >= 0; i -= 1) {
+    if (data[i].filled) {
+      indexOfFinalFilled = i
+      break
+    }
+  }
+  completelyFilled = indexOfFinalFilled !== undefined && indexOfFinalFilled === data.length - 1
+  const filledStyle = {
+    backgroundColor: yellow500
+  }
+  const completelyFilledStyle = {
+    backgroundColor: green500
+  }
+  const steps = data.map((d, i) => {
+    const filled = completelyFilled || (indexOfFinalFilled !== undefined && i <= indexOfFinalFilled)
+    const nextIsFilled = completelyFilled || (indexOfFinalFilled !== undefined && (i + 1) <= indexOfFinalFilled)
+    let leftLineStyle
+    let rightLineStyle
+    let bubbleStyle = { backgroundColor: slate100, boxShadow: 'var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)' }
+    if (nextIsFilled) {
+      rightLineStyle = filledStyle
+    }
+    if (completelyFilled) {
+      leftLineStyle = completelyFilledStyle
+      rightLineStyle = completelyFilledStyle
+      bubbleStyle = { ...bubbleStyle, ...completelyFilledStyle }
+    } else if (filled) {
+      leftLineStyle = filledStyle
+      bubbleStyle = { ...bubbleStyle, ...filledStyle }
+    }
     return (
       <div
         key={`stepper-${id}-step-${i}`}
         className='relative w-full flex justify-center items-center'
       >
-        <div className='absolute w-1/2 h-1 right-1/2 shadow-inner border' style={{ visibility: i === 0 ? 'hidden' : 'visible' }}></div>
-        <div className='rounded-full w-4 h-4 z-20 shadow-inner border bg-slate-100'></div>
-        <div className='absolute w-1/2 h-1 left-1/2 shadow-inner border' style={{ visibility: i === data.length - 1 ? 'hidden' : 'visible' }}></div>
+        <div className='absolute w-1/2 h-0.5 right-1/2 shadow-inner' style={{ visibility: i === 0 ? 'hidden' : 'visible', ...leftLineStyle }}></div>
+        <div className='rounded-full w-4 h-4 z-20 shadow-inner border bg-slate-100' style={bubbleStyle}>
+          <CheckIcon className='text-slate-100' style={{ visibility: filled && i === data.length - 1 ? 'visible' : 'hidden' }}/>
+        </div>
+        <div className='absolute w-1/2 h-0.5 left-1/2 shadow-inner' style={{ visibility: i === data.length - 1 ? 'hidden' : 'visible', ...rightLineStyle }}></div>
       </div>
     )
   })
@@ -169,23 +208,9 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
                 key={`school-${school}-stepper-${i}`}
                 id={school?.school}
                 className='col-span-5'
-                data={[
-                  {
-                    filled: true
-                  },
-                  {
-                    filled: true
-                  },
-                  {
-                    filled: true
-                  },
-                  {
-                    filled: true
-                  },
-                  {
-                    filled: true
-                  }
-                ]}
+                data={['date_replacement_scheduled', 'date_replaced', 'confirmation_sample_collection_date', 'date_results_received', 'released_for_unrestricted_use?'].map((key) => ({
+                  filled: fixture[key] !== null && String(fixture[key]).toLowerCase() !== 'no'
+                }))}
               />
             ])
           }
