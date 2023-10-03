@@ -3,6 +3,7 @@ import StatusBubble from '@/Components/StatusBubble'
 import { useDataContext } from '@/Contexts/DataContext'
 import { getNumCompleteFixtures, getNumInProgressFixtures, getStatusFromCounts } from '@/Services/SchoolStatus'
 import { useMapPreviewContext } from '@/Contexts/MapPreviewContext'
+import { useSchoolContext } from '@/Contexts/SchoolContext'
 
 interface ISchoolSummaryCardProps {
   schoolName: string
@@ -10,6 +11,7 @@ interface ISchoolSummaryCardProps {
 
 const SchoolSummaryCard = ({ schoolName }: ISchoolSummaryCardProps) => {
   const { filteredSchools } = useDataContext()
+  const { selectSchool } = useSchoolContext()
   const { setSchoolToPreview } = useMapPreviewContext()
   if (filteredSchools === null) {
     return <></>
@@ -23,6 +25,7 @@ const SchoolSummaryCard = ({ schoolName }: ISchoolSummaryCardProps) => {
   return (
     <div
       className='w-full'
+      onClick={() => selectSchool(schoolName)}
       onMouseEnter={() => setSchoolToPreview(schoolName)}
       onMouseLeave={() => setSchoolToPreview(null)}
     >

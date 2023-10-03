@@ -4,7 +4,7 @@ import TestData from '@/data.json'
 import { getProgress } from '@/Services/MapLayer'
 
 export type Fixtures = typeof TestData.data
-export type SchoolKey = keyof typeof TestData.bySchool
+export type SchoolKey = keyof typeof TestData.bySchool | string
 export type ProgressStatus = 'Not Started' | 'In Progress' | 'Completed'
 
 export type Schools = Record<SchoolKey | string, IFixture[]>

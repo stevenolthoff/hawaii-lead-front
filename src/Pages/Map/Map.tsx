@@ -8,6 +8,7 @@ import MapPopup from '@/Components/MapPopup'
 import MapSidebar from '@/Components/MapSidebar'
 import { useMapPreviewContext } from '@/Contexts/MapPreviewContext'
 import School from '@/Pages/School/School'
+import { useSchoolContext } from '@/Contexts/SchoolContext'
 
 const Map = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null)
@@ -15,8 +16,7 @@ const Map = () => {
   const [map, setMap] = useState<IMap | undefined>(undefined)
   const [layer, setLayer] = useState<IGeoJSONLayerProps | undefined>(undefined)
   const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
-  const [clickedSchool, setClickedSchool]= useState<ISchool | null>(null)
-  const { school } = useMapPreviewContext()
+  const { selectedSchool, selectSchool } = useSchoolContext()
 
   const MAP_CONFIG: IStyleableMapProps = {
     baseLayerKey: 'hybrid',
@@ -43,7 +43,7 @@ const Map = () => {
       newLayer.implementation?.unsetSelectedFeature()
     }
     newLayer.onSelect = (event: ILayerQueryEvent) => {
-      setClickedSchool(event.data?.feature?.properties?.data ?? null)
+      selectSchool(event.data?.feature?.properties?.data?.school ?? null)
     }
     setLayer(newLayer)
   }
@@ -53,6 +53,10 @@ const Map = () => {
   useEffect(() => {
     if (layer !== undefined) map?.reloadLayers([layer])
   }, [layer])
+
+  const onClickOutside = () => {
+    selectSchool(null)
+  }
 
   return (
     <div className='w-full max-w-full h-full max-h-full flex flex-col'>
@@ -89,11 +93,11 @@ const Map = () => {
           school={selectEvent?.data?.feature?.properties?.data}
         />
       }
-      {clickedSchool === null ?
+      {selectedSchool === null ?
         <></> :
         <School
-          onClickOutside={() => setClickedSchool(null)}
-          school={clickedSchool}
+          onClickOutside={onClickOutside}
+          school={selectedSchool}
         />
       }
     </div>
