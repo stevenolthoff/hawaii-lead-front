@@ -7,6 +7,36 @@ import { getNumCompleteFixtures, getNumInProgressFixtures } from '@/Services/Sch
 import { XMarkIcon } from '@heroicons/react/20/solid'
 import { IFixture } from '@/Contexts/DataContext'
 
+interface IStepperProps {
+  id: string
+  className?: string
+  data?: {
+    tooltip?: string,
+    filled: boolean
+  }[]
+}
+
+const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
+  const steps = data?.map((d, i) => {
+    return (
+      <div
+        key={`stepper-${id}-step-${i}`}
+        className='relative w-full flex justify-center items-center'
+      >
+        <div className='absolute w-1/2 h-1 right-1/2 shadow-inner border' style={{ visibility: i === 0 ? 'hidden' : 'visible' }}></div>
+        <div className='rounded-full w-4 h-4 z-20 shadow-inner border bg-slate-100'></div>
+        <div className='absolute w-1/2 h-1 left-1/2 shadow-inner border' style={{ visibility: i === data.length - 1 ? 'hidden' : 'visible' }}></div>
+      </div>
+    )
+  })
+  const wrapperClassName = (className ?? '').concat(' w-full flex justify-between')
+  return (
+    <div className={wrapperClassName}>
+      {steps}
+    </div>
+  )
+}
+
 interface ISchoolProps {
   onClickOutside: () => void
   school: ISchool | null
@@ -126,7 +156,40 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
           <div className={tableHeaderClassName}>Sample Collected</div>
           <div className={tableHeaderClassName}>Results Received</div>
           <div className={tableHeaderClassName}>Released</div>
+
           {
+            school?.fixtures.map((fixture, i) => [
+              <div key={`school-${school}-fixture-${i}-room-no`}>
+                {fixture.room_no}
+              </div>,
+              <div key={`school-${school}-fixture-${i}-source-type`}>
+                {fixture.source_type}
+              </div>,
+              <Stepper
+                key={`school-${school}-stepper-${i}`}
+                id={school?.school}
+                className='col-span-5'
+                data={[
+                  {
+                    filled: true
+                  },
+                  {
+                    filled: true
+                  },
+                  {
+                    filled: true
+                  },
+                  {
+                    filled: true
+                  },
+                  {
+                    filled: true
+                  }
+                ]}
+              />
+            ])
+          }
+          {/* {
             school?.fixtures.map((fixture, i) => [
               <div key={`school-${school}-fixture-${i}-room-no`}>
                 {fixture.room_no}
@@ -161,7 +224,7 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
                 final={true}
               />,
             ])
-          }
+          } */}
         </div>
       </div>
     </div>
