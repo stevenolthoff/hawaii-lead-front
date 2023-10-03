@@ -98,7 +98,7 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
   }
   const numComplete = getNumCompleteFixtures(school?.fixtures ?? [])
   const numInProgress = getNumInProgressFixtures(school?.fixtures ?? [])
-  const numNotStarted = school?.fixtures.length ?? 0 - numComplete - numInProgress
+  const numNotStarted = (school?.fixtures.length ?? 0) - numComplete - numInProgress
   const StackedBarChartOrNull = () => {
     return <div>
       {
