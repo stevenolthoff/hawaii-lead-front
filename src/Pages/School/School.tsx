@@ -18,10 +18,7 @@ interface IStepperProps {
 
 const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
   const slate100 = '#f1f5f9'
-  const slate300 = '#cbd5e1'
-  const blue500 = '#3b82f6'
   const green500 = '#22c55e'
-  const red500 = '#ef4444'
   const yellow500 = '#eab308'
   let completelyFilled = false
   let indexOfFinalFilled: number | undefined = undefined
@@ -43,17 +40,29 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
     const nextIsFilled = completelyFilled || (indexOfFinalFilled !== undefined && (i + 1) <= indexOfFinalFilled)
     let leftLineStyle
     let rightLineStyle
-    let bubbleStyle = { backgroundColor: slate100, boxShadow: 'var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)' }
+    let bubbleStyle: React.CSSProperties = {
+      backgroundColor: slate100, boxShadow: 'var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)',
+    }
     if (nextIsFilled) {
       rightLineStyle = filledStyle
     }
     if (completelyFilled) {
       leftLineStyle = completelyFilledStyle
       rightLineStyle = completelyFilledStyle
-      bubbleStyle = { ...bubbleStyle, ...completelyFilledStyle }
+      bubbleStyle = {
+        ...bubbleStyle,
+        ...completelyFilledStyle
+      }
     } else if (filled) {
       leftLineStyle = filledStyle
       bubbleStyle = { ...bubbleStyle, ...filledStyle }
+    }
+    if (i === data.length - 1 && filled) {
+      bubbleStyle = {
+        ...bubbleStyle,
+        width: '1.25rem',
+        height: '1.25rem'
+      }
     }
     return (
       <div
@@ -61,7 +70,7 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
         className='relative w-full flex justify-center items-center'
       >
         <div className='absolute w-1/2 h-0.5 right-1/2 shadow-inner' style={{ visibility: i === 0 ? 'hidden' : 'visible', ...leftLineStyle }}></div>
-        <div className='rounded-full w-4 h-4 z-20 shadow-inner border bg-slate-100' style={bubbleStyle}>
+        <div className='rounded-full w-3 h-3 z-20 shadow-inner border bg-slate-100' style={bubbleStyle}>
           <CheckIcon className='text-slate-100' style={{ visibility: filled && i === data.length - 1 ? 'visible' : 'hidden' }}/>
         </div>
         <div className='absolute w-1/2 h-0.5 left-1/2 shadow-inner' style={{ visibility: i === data.length - 1 ? 'hidden' : 'visible', ...rightLineStyle }}></div>
@@ -105,66 +114,10 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
       }
     </div>
   }
-  const StepperBubble = ({
-    key,
-    data,
-    dataOnRight,
-    final = false
-  }: {
-    key: string,
-    data: string | null,
-    dataOnRight: string | null,
-    final?: boolean
-  }): ReactElement => {
-    const slate100 = '#f1f5f9'
-    const slate300 = '#cbd5e1'
-    const blue500 = '#3b82f6'
-    const green500 = '#22c55e'
-    const red500 = '#ef4444'
-    let backgroundColor = ''
-    let border = ''
-    if (final) {
-      if (data === null) {
-        backgroundColor = slate100
-        border = '2px solid #cbd5e1'
-      } else if (data || data.toLowerCase() === 'yes') {
-        backgroundColor = green500
-      } else {
-        backgroundColor = red500
-      }
-    } else {
-      if (data === null) {
-        backgroundColor = slate100
-        border = `2px solid ${slate300}`
-      } else {
-        backgroundColor = blue500
-      }
-    }
-    return (
-      <div
-        key={key}
-        className='w-full h-full flex items-center relative'
-      >
-        <div
-          className='rounded-full w-4 h-4 z-20'
-          style={{
-            backgroundColor,
-            border
-          }}
-        >  
-        </div>
-        <div
-          className='w-full h-1 absolute bg-green-500'
-          style={{
-            backgroundColor: dataOnRight === null ? slate300 : blue500,
-            visibility: final ? 'hidden' : 'visible'
-          }}
-        >
-        </div>
-      </div>
-    )
-  }
   const tableHeaderClassName = 'text-xs leading-none font-semibold text-slate-500'
+  const bubbleIsFilled = (fixture: IFixture, key: string): boolean => {
+    return fixture[key] !== null && String(fixture[key]).toLowerCase() !== 'no'
+  }
   return (
     <div
       className='w-full max-w-full h-full max-h-full absolute z-20 flex justify-center shadow-2xl bg-slate-800/25 hover:cursor-pointer'
@@ -208,48 +161,26 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
                 key={`school-${school}-stepper-${i}`}
                 id={school?.school}
                 className='col-span-5'
-                data={['date_replacement_scheduled', 'date_replaced', 'confirmation_sample_collection_date', 'date_results_received', 'released_for_unrestricted_use?'].map((key) => ({
-                  filled: fixture[key] !== null && String(fixture[key]).toLowerCase() !== 'no'
-                }))}
+                data={[
+                  {
+                    filled: bubbleIsFilled(fixture, 'date_replacement_scheduled'),
+                  },
+                  {
+                    filled: bubbleIsFilled(fixture, 'date_replaced')
+                  },
+                  {
+                    filled: bubbleIsFilled(fixture, 'confirmation_sample_collection_date')
+                  },
+                  {
+                    filled: bubbleIsFilled(fixture, 'date_results_received')
+                  },
+                  {
+                    filled: bubbleIsFilled(fixture, 'released_for_unrestricted_use?')
+                  }
+                ]}
               />
             ])
           }
-          {/* {
-            school?.fixtures.map((fixture, i) => [
-              <div key={`school-${school}-fixture-${i}-room-no`}>
-                {fixture.room_no}
-              </div>,
-              <div key={`school-${school}-fixture-${i}-source-type`}>
-                {fixture.source_type}
-              </div>,
-              <StepperBubble
-                key={`school-${school}-fixture-${i}-date_replacement_scheduled`}
-                data={fixture.date_replacement_scheduled}
-                dataOnRight={fixture.date_replaced}
-              />,
-              <StepperBubble
-                key={`school-${school}-fixture-${i}-date_replaced`}
-                data={fixture.date_replaced}
-                dataOnRight={fixture.confirmation_sample_collection_date}
-              />,
-              <StepperBubble
-                key={`school-${school}-fixture-${i}-confirmation_sample_collection_date`}
-                data={fixture.confirmation_sample_collection_date}
-                dataOnRight={fixture.date_results_received}
-              />,
-              <StepperBubble
-                key={`school-${school}-fixture-${i}-date_results_received`}
-                data={fixture.date_results_received}
-                dataOnRight={fixture['released_for_unrestricted_use?']}
-              />,
-              <StepperBubble
-                key={`school-${school}-fixture-${i}-released_for_unrestricted_use`}
-                data={fixture['released_for_unrestricted_use?']}
-                dataOnRight={null}
-                final={true}
-              />,
-            ])
-          } */}
         </div>
       </div>
     </div>
