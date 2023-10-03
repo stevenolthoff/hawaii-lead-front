@@ -142,19 +142,25 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
         <StackedBarChartOrNull />
         <div className='grid grid-cols-7'>
           <div className={tableHeaderClassName}>Room No</div>
-          <div className={tableHeaderClassName}>Type</div>
-          <div className={tableHeaderClassName}>Replacement Scheduled</div>
-          <div className={tableHeaderClassName}>Replacement Installed</div>
-          <div className={tableHeaderClassName}>Sample Collected</div>
-          <div className={tableHeaderClassName}>Results Received</div>
-          <div className={tableHeaderClassName}>Released</div>
+          <div className={tableHeaderClassName + ' text-center'}>Type</div>
+          <div className={tableHeaderClassName + ' text-center'}>Replacement Scheduled</div>
+          <div className={tableHeaderClassName + ' text-center'}>Replacement Installed</div>
+          <div className={tableHeaderClassName + ' text-center'}>Sample Collected</div>
+          <div className={tableHeaderClassName + ' text-center'}>Results Received</div>
+          <div className={tableHeaderClassName + ' text-center'}>Released</div>
 
           {
             school?.fixtures.map((fixture, i) => [
-              <div key={`school-${school}-fixture-${i}-room-no`}>
+              <div
+                key={`school-${school}-fixture-${i}-room-no`}
+                className='text-sm'
+              >
                 {fixture.room_no}
               </div>,
-              <div key={`school-${school}-fixture-${i}-source-type`}>
+              <div
+                key={`school-${school}-fixture-${i}-source-type`}
+                className='text-sm truncate ... text-center'
+              >
                 {fixture.source_type}
               </div>,
               <Stepper
