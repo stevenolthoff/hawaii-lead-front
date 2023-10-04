@@ -77,7 +77,7 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
           {
             d.tooltip === undefined ?
               null :
-              <span className='tooltip rounded shadow-lg p-2 bg-gray-100 text-slate-800 block grow -mt-[35px] self-center text-sm w-[max-content]'>
+              <span className='tooltip rounded shadow-lg p-2 bg-gray-100 text-slate-800 block grow -mt-[35px] self-center text-sm'>
                 {d.tooltip}
               </span>
           }
