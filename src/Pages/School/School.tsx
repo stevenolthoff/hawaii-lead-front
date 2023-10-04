@@ -9,6 +9,7 @@ import { IFixture } from '@/Contexts/DataContext'
 import { DateTime } from 'luxon'
 import { useSchoolContext } from '@/Contexts/SchoolContext'
 import { useNavigate } from 'react-router-dom'
+import _ from 'lodash'
 
 interface IStepperProps {
   id: string
@@ -125,6 +126,9 @@ const School = () => {
   const getFormattedDate = (value: string | null) => {
     return value === null ? undefined : DateTime.fromISO(value).toLocaleString({ dateStyle: 'medium' })
   }
+  if (selectedSchool === null) {
+    return <></>
+  }
   return (
     <div
       className='w-full max-w-full h-full max-h-full absolute z-20 flex justify-center shadow-2xl bg-slate-800/25 hover:cursor-pointer'
@@ -163,49 +167,50 @@ const School = () => {
           <div className={tableHeaderClassName + ' text-center'}>Released</div>
 
           {
-            selectedSchool?.fixtures.map((fixture, i) => (
-              <div key={i} className='contents group'>
-                <div
-                  key={`school-${selectedSchool?.school}-fixture-${i}-room-no`}
-                  className='text-sm group-hover:bg-slate-200 p-2'
-                >
-                  {fixture.room_no}
+            _.sortBy(selectedSchool?.fixtures, ['room_no', 'source_type', 'asc', 'asc'])
+              .map((fixture, i) => (
+                <div key={i} className='contents group'>
+                  <div
+                    key={`school-${selectedSchool?.school}-fixture-${i}-room-no`}
+                    className='text-sm group-hover:bg-slate-200 p-2'
+                  >
+                    {fixture.room_no}
+                  </div>
+                  <div
+                    key={`school-${selectedSchool?.school}-fixture-${i}-source-type`}
+                    className='text-sm truncate ... text-center group-hover:bg-slate-200 p-2'
+                  >
+                    {fixture.source_type}
+                  </div>
+                  <Stepper
+                    key={`school-${selectedSchool?.school}-stepper-${i}`}
+                    id={selectedSchool.school}
+                    className='col-span-5 group-hover:bg-slate-200'
+                    data={[
+                      {
+                        filled: bubbleIsFilled(fixture, 'date_replacement_scheduled'),
+                        tooltip: getFormattedDate(fixture['date_replacement_scheduled'])
+                      },
+                      {
+                        filled: bubbleIsFilled(fixture, 'date_replaced'),
+                        tooltip: getFormattedDate(fixture['date_replaced'])
+                      },
+                      {
+                        filled: bubbleIsFilled(fixture, 'confirmation_sample_collection_date'),
+                        tooltip: getFormattedDate(fixture['confirmation_sample_collection_date'])
+                      },
+                      {
+                        filled: bubbleIsFilled(fixture, 'date_results_received'),
+                        tooltip: getFormattedDate(fixture['date_results_received'])
+                      },
+                      {
+                        filled: bubbleIsFilled(fixture, 'released_for_unrestricted_use?'),
+                        tooltip: fixture['released_for_unrestricted_use?']
+                      }
+                    ]}
+                  />
                 </div>
-                <div
-                  key={`school-${selectedSchool?.school}-fixture-${i}-source-type`}
-                  className='text-sm truncate ... text-center group-hover:bg-slate-200 p-2'
-                >
-                  {fixture.source_type}
-                </div>
-                <Stepper
-                  key={`school-${selectedSchool?.school}-stepper-${i}`}
-                  id={selectedSchool?.school}
-                  className='col-span-5 group-hover:bg-slate-200'
-                  data={[
-                    {
-                      filled: bubbleIsFilled(fixture, 'date_replacement_scheduled'),
-                      tooltip: getFormattedDate(fixture['date_replacement_scheduled'])
-                    },
-                    {
-                      filled: bubbleIsFilled(fixture, 'date_replaced'),
-                      tooltip: getFormattedDate(fixture['date_replaced'])
-                    },
-                    {
-                      filled: bubbleIsFilled(fixture, 'confirmation_sample_collection_date'),
-                      tooltip: getFormattedDate(fixture['confirmation_sample_collection_date'])
-                    },
-                    {
-                      filled: bubbleIsFilled(fixture, 'date_results_received'),
-                      tooltip: getFormattedDate(fixture['date_results_received'])
-                    },
-                    {
-                      filled: bubbleIsFilled(fixture, 'released_for_unrestricted_use?'),
-                      tooltip: fixture['released_for_unrestricted_use?']
-                    }
-                  ]}
-                />
-              </div>
-            ))
+              ))
           }
         </div>
       </div>
