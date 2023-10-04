@@ -138,7 +138,7 @@ const School = () => {
     >
       <div
         ref={cardRef}
-        className='w-[80%] max-w-[80%] h-full max-h-full bg-slate-100 py-4 px-4 pb-16 overflow-y-scroll hover:cursor-default scrollbox'
+        className='sm:w-full lg:w-[80%] xl:w-[50%] h-full max-h-full bg-slate-100 py-4 px-4 pb-16 overflow-y-scroll hover:cursor-default scrollbox'
         style={{
         }}
         onClick={onClickInside}
