@@ -10,6 +10,7 @@ import { DateTime } from 'luxon'
 import { useSchoolContext } from '@/Contexts/SchoolContext'
 import { useNavigate } from 'react-router-dom'
 import _ from 'lodash'
+import { getFixtureLabel } from '@/Services/FixtureLabel'
 
 interface IStepperProps {
   id: string
@@ -159,7 +160,7 @@ const School = () => {
         />
         <div className='grid grid-cols-7'>
           <div className={tableHeaderClassName}>Room No</div>
-          <div className={tableHeaderClassName + ' text-center'}>Type</div>
+          <div className={tableHeaderClassName}>Type</div>
           <div className={tableHeaderClassName + ' text-center'}>Replacement Scheduled</div>
           <div className={tableHeaderClassName + ' text-center'}>Replacement Installed</div>
           <div className={tableHeaderClassName + ' text-center'}>Sample Collected</div>
@@ -178,9 +179,9 @@ const School = () => {
                   </div>
                   <div
                     key={`school-${selectedSchool?.school}-fixture-${i}-source-type`}
-                    className='text-sm truncate ... text-center group-hover:bg-slate-200 p-2'
+                    className='text-sm break-word group-hover:bg-slate-200 p-2'
                   >
-                    {fixture.source_type}
+                    {getFixtureLabel(fixture.source_type)}
                   </div>
                   <Stepper
                     key={`school-${selectedSchool?.school}-stepper-${i}`}
