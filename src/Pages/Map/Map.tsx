@@ -2,12 +2,14 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useDataContext } from '@/Contexts/DataContext'
 import { Map as AxiomMap, IGeoJSONLayerProps, ILayerQueryEvent, IMap, IStyleableMapProps } from '@axdspub/axiom-maps'
 import { Loader } from '@axdspub/axiom-ui-utilities'
-import getLayer, { ISchool } from '@/Services/MapLayer'
+import getLayer from '@/Services/MapLayer'
 import MapFilters from '@/Components/MapFilters'
 import MapPopup from '@/Components/MapPopup'
 import MapSidebar from '@/Components/MapSidebar'
 import School from '@/Pages/School/School'
 import { useSchoolContext } from '@/Contexts/SchoolContext'
+import { useNavigate, useParams } from 'react-router-dom'
+import { getSchoolIdFromSlug, getSlugFromSchoolId } from '@/Services/SchoolId'
 
 const Map = () => {
   const mapContainerRef = useRef<HTMLDivElement>(null)
@@ -16,6 +18,8 @@ const Map = () => {
   const [layer, setLayer] = useState<IGeoJSONLayerProps | undefined>(undefined)
   const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
   const { selectedSchool, selectSchool } = useSchoolContext()
+  const { slug } = useParams()
+  const navigate = useNavigate()
 
   const MAP_CONFIG: IStyleableMapProps = {
     baseLayerKey: 'hybrid',
@@ -53,9 +57,16 @@ const Map = () => {
     if (layer !== undefined) map?.reloadLayers([layer])
   }, [layer])
 
-  const onClickOutside = () => {
-    selectSchool(null)
-  }
+  useEffect(() => {
+    if (data === null) return
+    selectSchool(slug === undefined ? null : getSchoolIdFromSlug(slug))
+  }, [data, slug])
+
+  useEffect(() => {
+    if (selectedSchool !== null) {
+      navigate({ pathname: `/schools/${getSlugFromSchoolId(selectedSchool?.school)}` })
+    }
+  }, [selectedSchool])
 
   return (
     <div className='w-full max-w-full h-full max-h-full flex flex-col'>
@@ -94,10 +105,7 @@ const Map = () => {
       }
       {selectedSchool === null ?
         <></> :
-        <School
-          onClickOutside={onClickOutside}
-          school={selectedSchool}
-        />
+        <School />
       }
     </div>
   )

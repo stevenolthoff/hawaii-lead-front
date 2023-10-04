@@ -1,14 +1,14 @@
 /* eslint-disable react/prop-types */
 import React, { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
 import useEscapeKey from '@/Hooks/useEscapeKey'
-import { ISchool } from '@/Services/MapLayer'
 import BubbleLegend from '@/Components/BubbleLegend'
 import StackedBarChart from '@/Components/StackedBarChart'
 import { getNumCompleteFixtures, getNumInProgressFixtures } from '@/Services/SchoolStatus'
 import { XMarkIcon, CheckIcon } from '@heroicons/react/20/solid'
 import { IFixture } from '@/Contexts/DataContext'
 import { DateTime } from 'luxon'
-import { Loader } from '@axdspub/axiom-ui-utilities'
+import { useSchoolContext } from '@/Contexts/SchoolContext'
+import { useNavigate } from 'react-router-dom'
 
 interface IStepperProps {
   id: string
@@ -95,17 +95,19 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
   )
 }
 
-interface ISchoolProps {
-  onClickOutside: () => void
-  school: ISchool | null
-}
 
-const School = ({ onClickOutside, school }: ISchoolProps) => {
+const School = () => {
   const cardRef = useRef<HTMLDivElement>(null)
   const [clientWidth, setClientWidth] = useState(0)
+  const { selectSchool, selectedSchool } = useSchoolContext()
+  const navigate = useNavigate()
   const onClickInside = (event: MouseEvent<HTMLDivElement>) => {
     event.stopPropagation()
     event.preventDefault()
+  }
+  const onClickOutside = () => {
+    navigate({ pathname: '/schools' })
+    selectSchool(null)
   }
   useEffect(() => {
     if (cardRef.current !== null) {
@@ -113,9 +115,9 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
     }
   }, [cardRef])
   useEscapeKey(onClickOutside)
-  const numComplete = getNumCompleteFixtures(school?.fixtures ?? [])
-  const numInProgress = getNumInProgressFixtures(school?.fixtures ?? [])
-  const numNotStarted = (school?.fixtures.length ?? 0) - numComplete - numInProgress
+  const numComplete = getNumCompleteFixtures(selectedSchool?.fixtures ?? [])
+  const numInProgress = getNumInProgressFixtures(selectedSchool?.fixtures ?? [])
+  const numNotStarted = (selectedSchool?.fixtures.length ?? 0) - numComplete - numInProgress
   const tableHeaderClassName = 'text-xs leading-none font-semibold text-slate-500 pb-2 break-words'
   const bubbleIsFilled = (fixture: IFixture, key: string): boolean => {
     return fixture[key] !== null && String(fixture[key]).toLowerCase() !== 'no'
@@ -123,7 +125,6 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
   const getFormattedDate = (value: string | null) => {
     return value === null ? undefined : DateTime.fromISO(value).toLocaleString({ dateStyle: 'medium' })
   }
-
   return (
     <div
       className='w-full max-w-full h-full max-h-full absolute z-20 flex justify-center shadow-2xl bg-slate-800/25 hover:cursor-pointer'
@@ -142,11 +143,11 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
             onClick={onClickOutside}
           />
         </div>
-        <p className='font-semibold text-xl'>{school?.school}</p>
-        <p className='text-slate-500 text-lg'>{school?.fixtures[0].island} / {school?.fixtures[0].district}</p>
+        <p className='font-semibold text-xl'>{selectedSchool?.school}</p>
+        <p className='text-slate-500 text-lg'>{selectedSchool?.fixtures[0].island} / {selectedSchool?.fixtures[0].district}</p>
         <BubbleLegend />
         <StackedBarChart
-          id={`stacked-bar-chart-school-${school?.school.toLowerCase().replace(' ', '-')}`}
+          id={`stacked-bar-chart-school-${selectedSchool?.school.toLowerCase().replace(' ', '-')}`}
           width={clientWidth - 32 < 0 ? 0 : clientWidth - 32}
           notStarted={numNotStarted}
           inProgress={numInProgress}
@@ -162,23 +163,23 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
           <div className={tableHeaderClassName + ' text-center'}>Released</div>
 
           {
-            school?.fixtures.map((fixture, i) => (
+            selectedSchool?.fixtures.map((fixture, i) => (
               <div key={i} className='contents group'>
                 <div
-                  key={`school-${school}-fixture-${i}-room-no`}
+                  key={`school-${selectedSchool?.school}-fixture-${i}-room-no`}
                   className='text-sm group-hover:bg-slate-200 p-2'
                 >
                   {fixture.room_no}
                 </div>
                 <div
-                  key={`school-${school}-fixture-${i}-source-type`}
+                  key={`school-${selectedSchool?.school}-fixture-${i}-source-type`}
                   className='text-sm truncate ... text-center group-hover:bg-slate-200 p-2'
                 >
                   {fixture.source_type}
                 </div>
                 <Stepper
-                  key={`school-${school}-stepper-${i}`}
-                  id={school?.school}
+                  key={`school-${selectedSchool?.school}-stepper-${i}`}
+                  id={selectedSchool?.school}
                   className='col-span-5 group-hover:bg-slate-200'
                   data={[
                     {
