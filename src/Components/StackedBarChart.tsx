@@ -14,7 +14,7 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete, width: containe
   const drawChart = () => {
     console.log('drawChart')
     if (containerPxWidth === undefined) return
-    const chart = d3.select(`#${id}`).selectChild('svg')
+    const chart = d3.select(`#${id}`).selectChildren('svg')
     try {
       console.log(chart)
       chart.remove()

@@ -11,6 +11,7 @@ import { useSchoolContext } from '@/Contexts/SchoolContext'
 import { useNavigate } from 'react-router-dom'
 import _ from 'lodash'
 import { getFixtureLabel } from '@/Services/FixtureLabel'
+import { Transition } from '@headlessui/react'
 
 interface IStepperProps {
   id: string
@@ -151,13 +152,23 @@ const School = () => {
         <p className='font-semibold text-xl'>{selectedSchool?.school}</p>
         <p className='text-slate-500 text-lg'>{selectedSchool?.fixtures[0].island} / {selectedSchool?.fixtures[0].district}</p>
         <BubbleLegend />
-        <StackedBarChart
-          id={`stacked-bar-chart-school-${selectedSchool?.school.toLowerCase().replace(' ', '-')}`}
-          width={clientWidth - 32 < 0 ? 0 : clientWidth - 32}
-          notStarted={numNotStarted}
-          inProgress={numInProgress}
-          complete={numComplete}
-        />
+        <Transition
+          show={(clientWidth - 32) > 0 && selectedSchool !== null}
+          enter="transition-opacity duration-75"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition-opacity duration-150"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <StackedBarChart
+            id={`stacked-bar-chart-school-${selectedSchool.school.toLowerCase().replaceAll(' ', '-')}`}
+            width={clientWidth - 32}
+            notStarted={numNotStarted}
+            inProgress={numInProgress}
+            complete={numComplete}
+          />
+        </Transition>
         <div className='grid grid-cols-7'>
           <div className={tableHeaderClassName}>Room No</div>
           <div className={tableHeaderClassName}>Type</div>
