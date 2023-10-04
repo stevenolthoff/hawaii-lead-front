@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
 import React, { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react'
+import useEscapeKey from '@/Hooks/useEscapeKey'
 import { ISchool } from '@/Services/MapLayer'
 import BubbleLegend from '@/Components/BubbleLegend'
 import StackedBarChart from '@/Components/StackedBarChart'
@@ -104,6 +105,7 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
     event.stopPropagation()
     event.preventDefault()
   }
+  useEscapeKey(onClickOutside)
   const numComplete = getNumCompleteFixtures(school?.fixtures ?? [])
   const numInProgress = getNumInProgressFixtures(school?.fixtures ?? [])
   const numNotStarted = (school?.fixtures.length ?? 0) - numComplete - numInProgress

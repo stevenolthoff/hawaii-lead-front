@@ -6,7 +6,6 @@ import getLayer, { ISchool } from '@/Services/MapLayer'
 import MapFilters from '@/Components/MapFilters'
 import MapPopup from '@/Components/MapPopup'
 import MapSidebar from '@/Components/MapSidebar'
-import { useMapPreviewContext } from '@/Contexts/MapPreviewContext'
 import School from '@/Pages/School/School'
 import { useSchoolContext } from '@/Contexts/SchoolContext'
 
