@@ -12,6 +12,7 @@ interface IStackedBarChartProps {
 const StackedBarChart = ({ id, notStarted, inProgress, complete, width: containerPxWidth }: IStackedBarChartProps): ReactElement => {
   const ref = useRef<HTMLDivElement>(null)
   const drawChart = () => {
+    console.log('drawChart')
     if (containerPxWidth === undefined) return
     const chart = d3.select(`#${id}`).selectChild('svg')
     try {

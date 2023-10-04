@@ -8,6 +8,7 @@ import { getNumCompleteFixtures, getNumInProgressFixtures } from '@/Services/Sch
 import { XMarkIcon, CheckIcon } from '@heroicons/react/20/solid'
 import { IFixture } from '@/Contexts/DataContext'
 import { DateTime } from 'luxon'
+import { Loader } from '@axdspub/axiom-ui-utilities'
 
 interface IStepperProps {
   id: string
@@ -101,29 +102,20 @@ interface ISchoolProps {
 
 const School = ({ onClickOutside, school }: ISchoolProps) => {
   const cardRef = useRef<HTMLDivElement>(null)
+  const [clientWidth, setClientWidth] = useState(0)
   const onClickInside = (event: MouseEvent<HTMLDivElement>) => {
     event.stopPropagation()
     event.preventDefault()
   }
+  useEffect(() => {
+    if (cardRef.current !== null) {
+      setClientWidth(cardRef.current.clientWidth)
+    }
+  }, [cardRef])
   useEscapeKey(onClickOutside)
   const numComplete = getNumCompleteFixtures(school?.fixtures ?? [])
   const numInProgress = getNumInProgressFixtures(school?.fixtures ?? [])
   const numNotStarted = (school?.fixtures.length ?? 0) - numComplete - numInProgress
-  const StackedBarChartOrNull = () => {
-    return <div>
-      {
-        cardRef?.current?.clientWidth === undefined ?
-          <></> :
-          <StackedBarChart
-            id={`stacked-bar-chart-school-${school?.school.toLowerCase().replace(' ', '-')}`}
-            width={cardRef.current.clientWidth - 32}
-            notStarted={numNotStarted}
-            inProgress={numInProgress}
-            complete={numComplete}
-          />
-      }
-    </div>
-  }
   const tableHeaderClassName = 'text-xs leading-none font-semibold text-slate-500 pb-2 break-words'
   const bubbleIsFilled = (fixture: IFixture, key: string): boolean => {
     return fixture[key] !== null && String(fixture[key]).toLowerCase() !== 'no'
@@ -131,6 +123,7 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
   const getFormattedDate = (value: string | null) => {
     return value === null ? undefined : DateTime.fromISO(value).toLocaleString({ dateStyle: 'medium' })
   }
+
   return (
     <div
       className='w-full max-w-full h-full max-h-full absolute z-20 flex justify-center shadow-2xl bg-slate-800/25 hover:cursor-pointer'
@@ -152,7 +145,13 @@ const School = ({ onClickOutside, school }: ISchoolProps) => {
         <p className='font-semibold text-xl'>{school?.school}</p>
         <p className='text-slate-500 text-lg'>{school?.fixtures[0].island} / {school?.fixtures[0].district}</p>
         <BubbleLegend />
-        <StackedBarChartOrNull />
+        <StackedBarChart
+          id={`stacked-bar-chart-school-${school?.school.toLowerCase().replace(' ', '-')}`}
+          width={clientWidth - 32 < 0 ? 0 : clientWidth - 32}
+          notStarted={numNotStarted}
+          inProgress={numInProgress}
+          complete={numComplete}
+        />
         <div className='grid grid-cols-7'>
           <div className={tableHeaderClassName}>Room No</div>
           <div className={tableHeaderClassName + ' text-center'}>Type</div>
