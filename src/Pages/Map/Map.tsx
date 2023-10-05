@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { useDataContext } from '@/Contexts/DataContext'
 import { Map as AxiomMap, IGeoJSONLayerProps, ILayerQueryEvent, IMap, IStyleableMapProps } from '@axdspub/axiom-maps'
 import { Button, Loader } from '@axdspub/axiom-ui-utilities'
@@ -56,6 +56,7 @@ const Map = () => {
   const { width } = useWindowSize()
   const [showViewToggle, setShowViewToggle] = useState(width < DESKTOP_WIDTH_PX)
   const [view, setView] = useState<'map' | 'list'>('list')
+  const [shouldShowMap, setShouldShowMap] = useState(!showViewToggle)
   const { selectedSchool, selectSchool } = useSchoolContext()
   const { slug } = useParams()
   const navigate = useNavigate()
@@ -111,12 +112,61 @@ const Map = () => {
     setShowViewToggle(width < DESKTOP_WIDTH_PX)
   }, [width])
 
+  useEffect(() => {
+    if (showViewToggle) {
+      setShouldShowMap(view === 'map')
+    } else {
+      setShouldShowMap(true)
+    }
+  }, [showViewToggle, view])
+
   const ListView = () => {
     return (showViewToggle && view === 'list') || !showViewToggle ?
       <div className='w-full lg:w-1/3'>
         <MapSidebar />
       </div> :
       <></>
+  }
+
+  const MapView = ({ children }: PropsWithChildren) => {
+    if (layer === undefined) return <></>
+    let width = null
+    if (showViewToggle && view === 'map') width = '100%'
+    else if (!showViewToggle) width = '66%'
+    if (width === null) return <></>
+    return (
+      <div style={{ width }}>
+        {children}
+        {/* <AxiomMap
+          {...MAP_CONFIG}
+          setState={setMap}
+          layers={[layer]}
+        /> */}
+      </div>
+    )
+  }
+
+  const MapLoader = () => {
+    if (layer !== undefined) return <></>
+    if (showViewToggle && view === 'map') {
+      return (
+        <div className='w-full h-full'>
+          <div className='w-full h-full flex justify-center items-center bg-slate-200 animate-pulse'>
+            <Loader />
+          </div>
+        </div>
+      )
+    } else if (!showViewToggle) {
+      return (
+        <div className='w-2/3 h-full'>
+          <div className='w-full h-full flex justify-center items-center bg-slate-200 animate-pulse'>
+            <Loader />
+          </div>
+        </div>
+      )
+    } else {
+      return <></>
+    }
   }
 
   return (
@@ -131,16 +181,19 @@ const Map = () => {
         <div className='max-w-full overflow-x-scroll no-scrollbar grow'><MapFilters /></div>
       </div>
       <div className='flex h-[calc(100%-6rem)] max-h-[calc(100%-6rem)]'>
-        <div className='w-full lg:w-2/3' ref={mapContainerRef}>
-          {layer === undefined ?
-            <div className='w-full h-full flex justify-center items-center bg-slate-200 animate-pulse'><Loader /></div> :
-            <AxiomMap
-              {...MAP_CONFIG}
-              setState={setMap}
-              layers={[layer]}
-            />
-          }
-        </div>
+        <MapLoader />
+        {/* <MapView> */}
+        {
+          layer === undefined ? <></> :
+            <div style={{ width: shouldShowMap && showViewToggle ? '100%' : '66%', display: shouldShowMap ? 'block' : 'none' }}>
+              <AxiomMap
+                {...MAP_CONFIG}
+                setState={setMap}
+                layers={[layer]}
+              />
+            </div>
+        }
+        {/* </MapView> */}
         <ListView />
       </div>
       {selectEvent === null ?
