@@ -5,7 +5,8 @@ module.exports = {
     './node_modules/@axdspub/**/*.{js,jsx,ts,tsx}'
   ],
   theme: {
-    extend: {},
+    extend: {
+    },
   },
   plugins: [],
 }

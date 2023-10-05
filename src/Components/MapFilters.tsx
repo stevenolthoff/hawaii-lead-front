@@ -43,7 +43,7 @@ const MapFilter = ({ options, onSelect, placeholder, disabled }: IMapFilterProps
       onChange={onChange}
       nullable
     >
-      <div className='z-20 bg-slate-100'>
+      <div className='max-w-full z-20 bg-slate-100'>
         <div className='flex'>
           <Combobox.Button className='flex items-center relative'>
             <Combobox.Input
