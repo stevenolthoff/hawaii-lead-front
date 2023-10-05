@@ -54,6 +54,7 @@ const Map = () => {
   const [layer, setLayer] = useState<IGeoJSONLayerProps | undefined>(undefined)
   const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
   const { width } = useWindowSize()
+  const [isMobileView, setIsMobileView] = useState(width < DESKTOP_WIDTH_PX)
   const [showViewToggle, setShowViewToggle] = useState(width < DESKTOP_WIDTH_PX)
   const [view, setView] = useState<'map' | 'list'>('map')
   const [shouldShowMap, setShouldShowMap] = useState(showViewToggle)
@@ -109,7 +110,9 @@ const Map = () => {
   }, [selectedSchool])
 
   useEffect(() => {
-    setShowViewToggle(width < DESKTOP_WIDTH_PX)
+    const mobile = width < DESKTOP_WIDTH_PX
+    setShowViewToggle(mobile)
+    setIsMobileView(mobile)
   }, [width])
 
   useEffect(() => {
@@ -166,7 +169,7 @@ const Map = () => {
         <MapLoader />
         {
           layer === undefined ? <></> :
-            <div style={{ width: shouldShowMap && showViewToggle ? '100%' : '66%', display: shouldShowMap ? 'block' : 'none' }}>
+            <div style={{ width: shouldShowMap && showViewToggle ? '100%' : 'calc(2*100%/3)', display: shouldShowMap ? 'block' : 'none' }}>
               <AxiomMap
                 {...MAP_CONFIG}
                 setState={setMap}
