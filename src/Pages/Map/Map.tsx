@@ -163,7 +163,7 @@ const Map = () => {
           </a>
           <div className='px-4 py-2 font-semibold text-slate-800 text-center w-full'>Hawaii Lead Water Monitor</div>
         </div>
-        <div className='max-w-full no-scrollbar grow'><MapFilters /></div>
+        <div className='max-w-full no-scrollbar grow overflow-x-scroll sm:overflow-visible'><MapFilters /></div>
       </div>
       <div className='flex h-[calc(100%-6rem)] max-h-[calc(100%-6rem)]'>
         <MapLoader />

@@ -68,7 +68,10 @@ const MapFilter = ({ options, onSelect, placeholder, disabled }: IMapFilterProps
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Combobox.Options className='absolute z-20 mt-1 bg-slate-100 max-h-80 max-w-80 w-60 overflow-y-scroll py-2 rounded-sm text-sm no-scrollbar hover:cursor-pointer shadow-xl'>
+          <Combobox.Options
+            className='fixed h-full w-full left-0 sm:left-auto sm:absolute z-20 mt-1 bg-slate-100 sm:h-80 sm:max-w-80 sm:w-60 overflow-y-scroll py-2 rounded-sm text-sm no-scrollbar hover:cursor-pointer shadow-xl'
+            style={{ maxHeight: filteredOptions.length <= 10 ? `${36 * filteredOptions.length + 18}px` : '' }}
+          >
             {filteredOptions.map((option) => (
               <Combobox.Option key={option} value={option} className='hover:bg-slate-200 px-4 py-2 truncate ...'>
                 {option}
