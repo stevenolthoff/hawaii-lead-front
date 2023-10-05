@@ -128,24 +128,6 @@ const Map = () => {
       <></>
   }
 
-  const MapView = ({ children }: PropsWithChildren) => {
-    if (layer === undefined) return <></>
-    let width = null
-    if (showViewToggle && view === 'map') width = '100%'
-    else if (!showViewToggle) width = '66%'
-    if (width === null) return <></>
-    return (
-      <div style={{ width }}>
-        {children}
-        {/* <AxiomMap
-          {...MAP_CONFIG}
-          setState={setMap}
-          layers={[layer]}
-        /> */}
-      </div>
-    )
-  }
-
   const MapLoader = () => {
     if (layer !== undefined) return <></>
     if (showViewToggle && view === 'map') {
@@ -178,11 +160,10 @@ const Map = () => {
           </a>
           <div className='px-4 py-2 font-semibold text-slate-800 text-center w-full'>Hawaii Lead Water Monitor</div>
         </div>
-        <div className='max-w-full overflow-x-scroll no-scrollbar grow'><MapFilters /></div>
+        <div className='max-w-full no-scrollbar grow'><MapFilters /></div>
       </div>
       <div className='flex h-[calc(100%-6rem)] max-h-[calc(100%-6rem)]'>
         <MapLoader />
-        {/* <MapView> */}
         {
           layer === undefined ? <></> :
             <div style={{ width: shouldShowMap && showViewToggle ? '100%' : '66%', display: shouldShowMap ? 'block' : 'none' }}>
@@ -193,7 +174,6 @@ const Map = () => {
               />
             </div>
         }
-        {/* </MapView> */}
         <ListView />
       </div>
       {selectEvent === null ?
