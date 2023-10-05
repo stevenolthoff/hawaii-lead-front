@@ -19,14 +19,14 @@ interface IMobileViewToggleProps {
 }
 
 const MobileViewToggle = ({ show, onToggle }: IMobileViewToggleProps) => {
-  const [view, setView] = useState<'map' | 'list'>('list')
-  const label = view === 'map' ? 'Map' : 'List'
+  const [view, setView] = useState<'map' | 'list'>('map')
+  const label = view === 'map' ? 'List' : 'Map'
   const onClick = () => {
     const newView = view === 'map' ? 'list' : 'map'
     setView(newView)
     onToggle(newView)
   }
-  const Icon = () => view === 'map' ? <MapIcon width='1rem' height='1rem' /> : <ListBulletIcon width='1rem' height='1rem' />
+  const Icon = () => view === 'list' ? <MapIcon width='1rem' height='1rem' /> : <ListBulletIcon width='1rem' height='1rem' />
   if (show) {
     return (
       <Button
@@ -55,8 +55,8 @@ const Map = () => {
   const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
   const { width } = useWindowSize()
   const [showViewToggle, setShowViewToggle] = useState(width < DESKTOP_WIDTH_PX)
-  const [view, setView] = useState<'map' | 'list'>('list')
-  const [shouldShowMap, setShouldShowMap] = useState(!showViewToggle)
+  const [view, setView] = useState<'map' | 'list'>('map')
+  const [shouldShowMap, setShouldShowMap] = useState(showViewToggle)
   const { selectedSchool, selectSchool } = useSchoolContext()
   const { slug } = useParams()
   const navigate = useNavigate()
