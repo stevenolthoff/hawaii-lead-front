@@ -63,7 +63,7 @@ const MapPopup = ({
     return (
       <div
         ref={ref}
-        className='absolute z-10 px-4 py-2 rounded-md bg-slate-100 shadow-xl flex justify-center items-center'
+        className='fixed z-10 px-4 py-2 rounded-md bg-slate-100 shadow-xl flex justify-center items-center'
         style={{
           left: `${getLeftPx()}px`,
           top: `${getTopPx()}px`,

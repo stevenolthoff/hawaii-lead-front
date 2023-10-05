@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDataContext } from '@/Contexts/DataContext'
 import { Map as AxiomMap, IGeoJSONLayerProps, ILayerQueryEvent, IMap, IStyleableMapProps } from '@axdspub/axiom-maps'
 import { Button, Loader } from '@axdspub/axiom-ui-utilities'
@@ -169,7 +169,10 @@ const Map = () => {
         <MapLoader />
         {
           layer === undefined ? <></> :
-            <div style={{ width: shouldShowMap && showViewToggle ? '100%' : 'calc(2*100%/3)', display: shouldShowMap ? 'block' : 'none' }}>
+            <div
+              ref={mapContainerRef}
+              style={{ width: shouldShowMap && showViewToggle ? '100%' : 'calc(2*100%/3)', display: shouldShowMap ? 'block' : 'none' }}
+            >
               <AxiomMap
                 {...MAP_CONFIG}
                 setState={setMap}
