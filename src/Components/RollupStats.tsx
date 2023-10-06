@@ -2,17 +2,17 @@
  * clean this whole thing up
  */
 
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ProgressStatus, useDataContext } from '@/Contexts/DataContext'
 import { getStats } from '@/Services/RollupStats'
 import { getNumCompleteFixtures, getNumInProgressFixtures } from '@/Services/SchoolStatus'
 import { IFixture } from '@/Contexts/DataContext'
 import StackedBarChart from '@/Components/StackedBarChart'
 import BubbleLegend from '@/Components/BubbleLegend'
+import { Loader } from '@axdspub/axiom-ui-utilities'
 
 const RollupStats = () => {
   const { filteredSchools } = useDataContext()
-  const containerRef = useRef<HTMLDivElement>(null)
   const [stats, setStats] = useState<Record<ProgressStatus, number> | null>(null)
   const [allFixtures, setAllFixtures] = useState<IFixture[]>([])
   const [totalNotStarted, setTotalNotStarted] = useState(0)
@@ -45,6 +45,7 @@ const RollupStats = () => {
 
   useEffect(() => {
     if (filteredSchools === null) return
+    console.log('filteredSchools changed', filteredSchools)
     setStats(getStats(filteredSchools))
     console.log(filteredSchools)
     setAllFixtures(Object.values(filteredSchools ?? []).flat())
@@ -58,42 +59,45 @@ const RollupStats = () => {
     setTotalInProgress(inProgress)
     setTotalNotStarted(allFixtures.length - complete - inProgress)
   }, [allFixtures])
-  
-  if (filteredSchools === null || stats === null) {
-    return <></>
-  } else {
-    return (
-      <div ref={containerRef}>
-        <div className='flex flex-col gap-2'>
-          <p className='font-semibold text-lg'>{getSchoolCount()}</p>
-          <BubbleLegend />
-          <div>
-            <p className='font-semibold text-slate-800'>School Summary</p>
-            <p className='text-xs text-slate-500'>Fixture replacement status by school</p>
-            <StackedBarChart
-              id='stacked-bar-chart-school-summary'
-              width={containerRef?.current?.clientWidth}
-              notStarted={stats['Not Started']}
-              inProgress={stats['In Progress']}
-              complete={stats['Completed']}
-            />
-          </div>
-          <div>
-            <p className='font-semibold text-lg'>{getFixtureCount()} </p>
-            <p className='font-semibold text-slate-800'>Fixture Summary</p>
-            <p className='text-xs text-slate-500'>Overall fixture replacements</p>
-            <StackedBarChart
-              id='stacked-bar-chart-fixture-summary'
-              width={containerRef?.current?.clientWidth}
-              notStarted={totalNotStarted}
-              inProgress={totalInProgress}
-              complete={totalComplete}
-            />
-          </div>
+
+  return (
+    <div>
+      <div className='flex flex-col gap-2'>
+        <p className='font-semibold text-lg'>{getSchoolCount()}</p>
+        <BubbleLegend />
+        <div>
+          <p className='font-semibold text-slate-800'>School Summary</p>
+          <p className='text-xs text-slate-500'>Fixture replacement status by school</p>
+          {
+            stats === null ?
+              <div className='w-full h-[100px] flex items-center'><div className='w-full h-[50px] bg-slate-200 rounded-md animate-pulse'></div></div> :
+              <StackedBarChart
+                id='map-chart-school'
+                notStarted={stats['Not Started']}
+                inProgress={stats['In Progress']}
+                complete={stats['Completed']}
+              />
+          }
+        </div>
+        <div>
+          <p className='font-semibold text-lg'>{getFixtureCount()} </p>
+          <p className='font-semibold text-slate-800'>Fixture Summary</p>
+          <p className='text-xs text-slate-500'>Overall fixture replacements</p>
+          {
+            totalNotStarted === 0 && totalInProgress === 0 && totalComplete === 0 ?
+              <div className='w-full h-[100px] flex items-center'><div className='w-full h-[50px] bg-slate-200 rounded-md animate-pulse'></div></div> :
+              <StackedBarChart
+                id='map-chart-fixture'
+                notStarted={totalNotStarted}
+                inProgress={totalInProgress}
+                complete={totalComplete}
+              />
+          }
         </div>
       </div>
-    )
-  }
+    </div>
+  )
+  // }
 }
  
 export default RollupStats

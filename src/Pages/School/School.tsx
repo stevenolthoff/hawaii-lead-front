@@ -101,7 +101,7 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
 
 const School = () => {
   const cardRef = useRef<HTMLDivElement>(null)
-  const [clientWidth, setClientWidth] = useState(0)
+  const [clientWidth, setClientWidth] = useState<number | undefined>(undefined)
   const { selectSchool, selectedSchool } = useSchoolContext()
   const navigate = useNavigate()
   const onClickInside = (event: MouseEvent<HTMLDivElement>) => {
@@ -153,7 +153,7 @@ const School = () => {
         <p className='text-slate-500 text-lg'>{selectedSchool?.fixtures[0].island} / {selectedSchool?.fixtures[0].district}</p>
         <BubbleLegend />
         <Transition
-          show={(clientWidth - 32) > 0 && selectedSchool !== null}
+          show={clientWidth !== undefined && selectedSchool !== null}
           enter="transition-opacity duration-75"
           enterFrom="opacity-0"
           enterTo="opacity-100"
@@ -161,13 +161,15 @@ const School = () => {
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <StackedBarChart
-            id={`stacked-bar-chart-school-${selectedSchool.school.toLowerCase().replaceAll(' ', '-')}`}
-            width={clientWidth - 32}
-            notStarted={numNotStarted}
-            inProgress={numInProgress}
-            complete={numComplete}
-          />
+          {
+            clientWidth === undefined ? <></> :
+              <StackedBarChart
+                id={`stacked-bar-chart-school-${selectedSchool.school.toLowerCase().replaceAll(' ', '-')}`}
+                notStarted={numNotStarted}
+                inProgress={numInProgress}
+                complete={numComplete}
+              />
+          }
         </Transition>
         <div className='grid grid-cols-7'>
           <div className={tableHeaderClassName}>Room No</div>

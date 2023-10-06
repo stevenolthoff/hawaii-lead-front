@@ -6,22 +6,17 @@ interface IStackedBarChartProps {
   notStarted: number
   inProgress: number
   complete: number
-  width: number | undefined
+  // width: number
 }
 
-const StackedBarChart = ({ id, notStarted, inProgress, complete, width: containerPxWidth }: IStackedBarChartProps): ReactElement => {
+const StackedBarChart = ({ id, notStarted, inProgress, complete }: IStackedBarChartProps): ReactElement => {
   const ref = useRef<HTMLDivElement>(null)
   const drawChart = () => {
-    console.log('drawChart')
-    if (containerPxWidth === undefined) return
     const chart = d3.select(`#${id}`).selectChildren('svg')
-    try {
-      console.log(chart)
+    console.log('chart selection', chart, id)
+    if (!chart.empty()) {
       chart.remove()
-    } catch (error) {
-      console.error(`No chart with id "#${id}" to remove`)
     }
-
     const data = [
       {
         label: 'Not Started',
@@ -49,6 +44,10 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete, width: containe
       bottom: 0,
       left: 2
     }
+    const container = d3.select(`#${id}`)
+    console.log('container', parseInt(container?.style('width')))
+    const containerPxWidth = parseInt(container?.style('width'))
+    // const containerPxWidth = parseInt(container.)
     const width = containerPxWidth ?? 100
     const w = width - margin.left - margin.right
     const h = height * 0.66
@@ -83,8 +82,10 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete, width: containe
     const groupData = groupDataFunc(data)
     console.info('groupData', groupData)
 
-    const sel = d3.select(ref.current)
+    // const sel = d3.select(ref.current)
+    const sel = container
       .append('svg')
+      .attr('id', id)
       .attr('width', width)
       .attr('height', height)
 
@@ -128,10 +129,11 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete, width: containe
       .text(d => f(d.percent) + '%')
   }
 
-  useEffect(drawChart, [containerPxWidth, notStarted, inProgress, complete])
+  useEffect(drawChart, [notStarted, inProgress, complete])
 
   return (
-    <div ref={ref} id={`${id}`}></div>
+    <div ref={ref} id={id} className='w-full h-[100px] first-letter:p-4'>
+    </div>
   )
 }
 

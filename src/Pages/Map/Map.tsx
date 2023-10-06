@@ -123,14 +123,6 @@ const Map = () => {
     }
   }, [showViewToggle, view])
 
-  const ListView = () => {
-    return (showViewToggle && view === 'list') || !showViewToggle ?
-      <div className='w-full lg:w-1/3'>
-        <MapSidebar />
-      </div> :
-      <></>
-  }
-
   const MapLoader = () => {
     if (layer !== undefined) return <></>
     if (showViewToggle && view === 'map') {
@@ -180,7 +172,12 @@ const Map = () => {
               />
             </div>
         }
-        <ListView />
+        <div
+          className='w-full lg:w-1/3'
+          style={{ display: (showViewToggle && view === 'list') || !showViewToggle ? 'block' : 'none' }}
+        >
+          <MapSidebar />
+        </div>
       </div>
       {selectEvent === null ?
         <></> :
