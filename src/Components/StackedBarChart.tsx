@@ -1,5 +1,6 @@
-import React, { useEffect, ReactElement, useRef } from 'react'
+import React, { useEffect, ReactElement, useRef, useState } from 'react'
 import * as d3 from 'd3'
+import { useWindowSize } from 'usehooks-ts'
 
 interface IStackedBarChartProps {
   id: string
@@ -11,7 +12,13 @@ interface IStackedBarChartProps {
 
 const StackedBarChart = ({ id, notStarted, inProgress, complete }: IStackedBarChartProps): ReactElement => {
   const ref = useRef<HTMLDivElement>(null)
+  const [loading, setLoading] = useState(true)
+  const { width: windowWidth } = useWindowSize()
   const drawChart = () => {
+    setLoading(true)
+    const container = d3.select(`#${id}`)
+    const containerPxWidth = parseInt(container?.style('width'))
+    if (container === null) return
     const chart = d3.select(`#${id}`).selectChildren('svg')
     console.log('chart selection', chart, id)
     if (!chart.empty()) {
@@ -44,14 +51,9 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete }: IStackedBarCh
       bottom: 0,
       left: 2
     }
-    const container = d3.select(`#${id}`)
-    console.log('container', parseInt(container?.style('width')))
-    const containerPxWidth = parseInt(container?.style('width'))
-    // const containerPxWidth = parseInt(container.)
     const width = containerPxWidth ?? 100
     const w = width - margin.left - margin.right
     const h = height * 0.66
-    // const colors = ['#ef4444', '#eab308', '#22c55e']
 
     const total = d3.sum(data, d => d.value)
     console.info('total', total)
@@ -127,12 +129,19 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete }: IStackedBarCh
       .attr('y', (h / 2) - (halfBarHeight * 1.1))
       .style('font-size', '.7rem')
       .text(d => f(d.percent) + '%')
+
+    setLoading(false)
   }
 
-  useEffect(drawChart, [notStarted, inProgress, complete])
+  useEffect(drawChart, [notStarted, inProgress, complete, windowWidth])
 
   return (
-    <div ref={ref} id={id} className='w-full h-[100px] first-letter:p-4'>
+    <div ref={ref} id={id} className='w-full h-[100px] first-letter:p-4 flex items-center'>
+      {
+        loading ?
+          <div className='h-[50px] rounded-md bg-slate-300'></div> :
+          <></>
+      }
     </div>
   )
 }

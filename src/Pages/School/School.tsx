@@ -152,25 +152,12 @@ const School = () => {
         <p className='font-semibold text-xl'>{selectedSchool?.school}</p>
         <p className='text-slate-500 text-lg'>{selectedSchool?.fixtures[0].island} / {selectedSchool?.fixtures[0].district}</p>
         <BubbleLegend />
-        <Transition
-          show={clientWidth !== undefined && selectedSchool !== null}
-          enter="transition-opacity duration-75"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="transition-opacity duration-150"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          {
-            clientWidth === undefined ? <></> :
-              <StackedBarChart
-                id={`stacked-bar-chart-school-${selectedSchool.school.toLowerCase().replaceAll(' ', '-')}`}
-                notStarted={numNotStarted}
-                inProgress={numInProgress}
-                complete={numComplete}
-              />
-          }
-        </Transition>
+        <StackedBarChart
+          id={`stacked-bar-chart-school-${selectedSchool.school.toLowerCase().replaceAll(' ', '-')}`}
+          notStarted={numNotStarted}
+          inProgress={numInProgress}
+          complete={numComplete}
+        />
         <div className='grid grid-cols-7'>
           <div className={tableHeaderClassName}>Room No</div>
           <div className={tableHeaderClassName}>Type</div>

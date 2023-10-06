@@ -70,7 +70,7 @@ const RollupStats = () => {
           <p className='text-xs text-slate-500'>Fixture replacement status by school</p>
           {
             stats === null ?
-              <div className='w-full h-[100px] flex items-center'><div className='w-full h-[50px] bg-slate-200 rounded-md animate-pulse'></div></div> :
+              <></> :
               <StackedBarChart
                 id='map-chart-school'
                 notStarted={stats['Not Started']}
@@ -85,7 +85,7 @@ const RollupStats = () => {
           <p className='text-xs text-slate-500'>Overall fixture replacements</p>
           {
             totalNotStarted === 0 && totalInProgress === 0 && totalComplete === 0 ?
-              <div className='w-full h-[100px] flex items-center'><div className='w-full h-[50px] bg-slate-200 rounded-md animate-pulse'></div></div> :
+              <></> :
               <StackedBarChart
                 id='map-chart-fixture'
                 notStarted={totalNotStarted}
