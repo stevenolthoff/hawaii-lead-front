@@ -11,7 +11,6 @@ import { useSchoolContext } from '@/Contexts/SchoolContext'
 import { useNavigate } from 'react-router-dom'
 import _ from 'lodash'
 import { getFixtureLabel } from '@/Services/FixtureLabel'
-import { Transition } from '@headlessui/react'
 
 interface IStepperProps {
   id: string
@@ -75,15 +74,9 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
         key={`stepper-${id}-step-${i}`}
         className='relative w-full flex justify-center items-center'
       >
+        
         <div className='absolute w-1/2 h-0.5 right-1/2 shadow-inner' style={{ visibility: i === 0 ? 'hidden' : 'visible', ...leftLineStyle }}></div>
-        <div className='relative rounded-full w-4 h-4 z-20 shadow-inner border bg-slate-100 has-tooltip' style={bubbleStyle}>
-          {
-            d.tooltip === undefined ?
-              null :
-              <span className='tooltip rounded shadow-lg p-2 bg-gray-100 text-slate-800 block grow -mt-[35px] self-center text-sm'>
-                {d.tooltip}
-              </span>
-          }
+        <div className='relative rounded-full w-4 h-4 z-20 shadow-inner border bg-slate-100' style={bubbleStyle}>
           <CheckIcon className='text-slate-100' style={{ visibility: filled && i === data.length - 1 ? 'visible' : 'hidden' }}/>
         </div>
         <div className='absolute w-1/2 h-0.5 left-1/2 shadow-inner' style={{ visibility: i === data.length - 1 ? 'hidden' : 'visible', ...rightLineStyle }}></div>
@@ -98,6 +91,108 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
   )
 }
 
+interface IRowProps {
+  fixture: IFixture
+  id: string
+}
+const Row = ({ fixture, id }: IRowProps) => {
+  const [expand, setExpand] = useState(false)
+  const bubbleIsFilled = (fixture: IFixture, key: string): boolean => {
+    return fixture[key] !== null && String(fixture[key]).toLowerCase() !== 'no'
+  }
+  const getFormattedDate = (value: string | null) => {
+    return value === null ? <p className='text-slate-300 text-center'>No Data</p> : DateTime.fromISO(value).toLocaleString({ dateStyle: 'medium' })
+  }
+  const getReleasedTooltip = (fixture: IFixture): string | ReactElement => {
+    let text = ''
+    const released_for_unrestricted_use = fixture['released_for_unrestricted_use?']
+    if (released_for_unrestricted_use === '' || released_for_unrestricted_use === null) return <p className='text-slate-300 text-center'>No Data</p>
+    const { flush_result_ppb, confirmation_result_ppb } = fixture
+    if (released_for_unrestricted_use !== '' && released_for_unrestricted_use !== null) {
+      text += `Released?: ${released_for_unrestricted_use}`
+    }
+    if (flush_result_ppb !== '' && flush_result_ppb !== null) {
+      text += `\nFlush: ${flush_result_ppb} PPB`
+    }
+    if (confirmation_result_ppb !== '' && confirmation_result_ppb !== null) {
+      text += `\nConfirmation: ${confirmation_result_ppb} PPB`
+    }
+    return text
+  }
+  const onClickRow = () => {
+    setExpand(!expand)
+  }
+  const expandedClassName = 'text-xs text-slate-800 font-semibold'
+  const dividerClassName = 'flex justify-center text-slate-300 pb-2 font-normal'
+  return (
+    <div key={`row-${id}`} className='contents'>
+      <div className='group contents' onClick={onClickRow}>
+        <div
+          key={`fixture-${id}-room-no`}
+          className='text-sm group-hover:bg-slate-200 group-hover:cursor-pointer p-2'
+        >
+          {fixture.room_no}
+        </div>
+        <div
+          key={`fixture-${id}-source-type`}
+          className='text-sm break-word group-hover:bg-slate-200 group-hover:cursor-pointer p-2'
+        >
+          {getFixtureLabel(fixture.source_type)}
+        </div>
+        <Stepper
+          key={`fixture-${id}-stepper`}
+          id={id}
+          className='col-span-5 group-hover:bg-slate-200 group-hover:cursor-pointer'
+          data={[
+            {
+              filled: bubbleIsFilled(fixture, 'date_replacement_scheduled')
+            },
+            {
+              filled: bubbleIsFilled(fixture, 'date_replaced')
+            },
+            {
+              filled: bubbleIsFilled(fixture, 'confirmation_sample_collection_date'),
+            },
+            {
+              filled: bubbleIsFilled(fixture, 'date_results_received')
+            },
+            {
+              filled: bubbleIsFilled(fixture, 'released_for_unrestricted_use?')
+            }
+          ]}
+        />
+      </div>
+      {
+        expand ?
+          <div className='contents'>
+            <div></div>
+            <div></div>
+            <div className={expandedClassName}>
+              <div className={dividerClassName}>|</div>
+              {getFormattedDate(fixture['date_replacement_scheduled'])}
+            </div>
+            <div className={expandedClassName}>
+              <div className={dividerClassName}>|</div>
+              {getFormattedDate(fixture['date_replaced'])}
+            </div>
+            <div className={expandedClassName}>
+              <div className={dividerClassName}>|</div>
+              {getFormattedDate(fixture['confirmation_sample_collection_date'])}
+            </div>
+            <div className={expandedClassName}>
+              <div className={dividerClassName}>|</div>
+              {getFormattedDate(fixture['date_results_received'])}
+            </div>
+            <div className={expandedClassName}>
+              <div className={dividerClassName}>|</div>
+              <pre className='font-sans'>{getReleasedTooltip(fixture)}</pre>
+            </div>
+          </div> :
+          null
+      }
+    </div>
+  )
+}
 
 const School = () => {
   const cardRef = useRef<HTMLDivElement>(null)
@@ -127,6 +222,22 @@ const School = () => {
   }
   const getFormattedDate = (value: string | null) => {
     return value === null ? undefined : DateTime.fromISO(value).toLocaleString({ dateStyle: 'medium' })
+  }
+  const getReleasedTooltip = (fixture: IFixture): string | undefined => {
+    let text = ''
+    const released_for_unrestricted_use = fixture['released_for_unrestricted_use?']
+    if (released_for_unrestricted_use === '' || released_for_unrestricted_use === null) return undefined
+    const { flush_result_ppb, confirmation_result_ppb } = fixture
+    if (released_for_unrestricted_use !== '' && released_for_unrestricted_use !== null) {
+      text += `Released Status:\t\t\t\t${released_for_unrestricted_use}`
+    }
+    if (flush_result_ppb !== '' && flush_result_ppb !== null) {
+      text += `\nFlush Result:\t\t\t\t${flush_result_ppb} PPB`
+    }
+    if (confirmation_result_ppb !== '' && confirmation_result_ppb !== null) {
+      text += `\nConfirmation Result:\t\t${confirmation_result_ppb} PPB`
+    }
+    return text
   }
   if (selectedSchool === null) {
     return <></>
@@ -170,47 +281,7 @@ const School = () => {
           {
             _.sortBy(selectedSchool?.fixtures, ['room_no', 'source_type', 'asc', 'asc'])
               .map((fixture, i) => (
-                <div key={i} className='contents group'>
-                  <div
-                    key={`school-${selectedSchool?.school}-fixture-${i}-room-no`}
-                    className='text-sm group-hover:bg-slate-200 p-2'
-                  >
-                    {fixture.room_no}
-                  </div>
-                  <div
-                    key={`school-${selectedSchool?.school}-fixture-${i}-source-type`}
-                    className='text-sm break-word group-hover:bg-slate-200 p-2'
-                  >
-                    {getFixtureLabel(fixture.source_type)}
-                  </div>
-                  <Stepper
-                    key={`school-${selectedSchool?.school}-stepper-${i}`}
-                    id={selectedSchool.school}
-                    className='col-span-5 group-hover:bg-slate-200'
-                    data={[
-                      {
-                        filled: bubbleIsFilled(fixture, 'date_replacement_scheduled'),
-                        tooltip: getFormattedDate(fixture['date_replacement_scheduled'])
-                      },
-                      {
-                        filled: bubbleIsFilled(fixture, 'date_replaced'),
-                        tooltip: getFormattedDate(fixture['date_replaced'])
-                      },
-                      {
-                        filled: bubbleIsFilled(fixture, 'confirmation_sample_collection_date'),
-                        tooltip: getFormattedDate(fixture['confirmation_sample_collection_date'])
-                      },
-                      {
-                        filled: bubbleIsFilled(fixture, 'date_results_received'),
-                        tooltip: getFormattedDate(fixture['date_results_received'])
-                      },
-                      {
-                        filled: bubbleIsFilled(fixture, 'released_for_unrestricted_use?'),
-                        tooltip: fixture['released_for_unrestricted_use?']
-                      }
-                    ]}
-                  />
-                </div>
+                <Row key={i} id={`${i}`} fixture={fixture} />
               ))
           }
         </div>
