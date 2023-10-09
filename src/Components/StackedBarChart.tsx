@@ -12,6 +12,7 @@ interface IStackedBarChartProps {
 
 const StackedBarChart = ({ id, notStarted, inProgress, complete }: IStackedBarChartProps): ReactElement => {
   const ref = useRef<HTMLDivElement>(null)
+  const [containerWidth, setContainerWidth] = useState<number | undefined>(undefined)
   const [loading, setLoading] = useState(true)
   const { width: windowWidth } = useWindowSize()
   const drawChart = () => {
@@ -133,7 +134,12 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete }: IStackedBarCh
     setLoading(false)
   }
 
-  useEffect(drawChart, [notStarted, inProgress, complete, windowWidth])
+  useEffect(drawChart, [notStarted, inProgress, complete, windowWidth, containerWidth])
+
+  useEffect(() => {
+    if (ref.current?.clientWidth === undefined) return
+    setContainerWidth(ref.current.clientWidth)
+  }, [ref.current?.clientWidth])
 
   return (
     <div ref={ref} id={id} className='w-full h-[100px] first-letter:p-4 flex items-center'>
