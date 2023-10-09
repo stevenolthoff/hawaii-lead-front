@@ -25,9 +25,9 @@ function parseAsGeoJSON (schools: IAPIResponse['bySchool']): any {
   return schoolKeys.map(schoolKey => {
     const school = schoolKey as SchoolKey
     const fixtures = schools[school]
-    const fixture = fixtures[0]
-    const latitude = Number(fixture.x)
-    const longitude = Number(fixture.y)
+    const coordinates = findCoordinates(fixtures)
+    const latitude = coordinates === null ? null : coordinates[0]
+    const longitude = coordinates === null ? null : coordinates[1]
     const data: ISchool = {
       school,
       fixtures
@@ -48,6 +48,12 @@ function parseAsGeoJSON (schools: IAPIResponse['bySchool']): any {
       }
     }
   }).filter(featureOrNull => featureOrNull !== null)
+}
+
+function findCoordinates (fixtures: IFixture[]): [number, number] | null {
+  const fixture = fixtures.find(fixture => fixture.x !== null && fixture.y !== null)
+  if (fixture === undefined) return null
+  return [Number(fixture.x), Number(fixture.y)]
 }
 
 function getColor(fixtures: Fixtures) {
