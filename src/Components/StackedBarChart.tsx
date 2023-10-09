@@ -111,6 +111,8 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete }: IStackedBarCh
       .attr('height', barHeight)
       .attr('width', d => xScale(d.value))
       .style('fill', (d, i) => d.color)
+      .append('title')
+      .text(d => f(d.percent) + '%')
 
     // add values on bar
     join.append('text')
@@ -121,15 +123,17 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete }: IStackedBarCh
       .style('font-size', '.75rem')
       .style('fill', 'white')
       .text(d => d.value)
+      .append('title')
+      .text(d => f(d.percent) + '%')
 
     // add some labels for percentages
-    join.append('text')
-      .attr('class', 'text-percent')
-      .attr('text-anchor', 'middle')
-      .attr('x', d => xScale(d.cumulative) + (xScale(d.value) / 2))
-      .attr('y', (h / 2) - (halfBarHeight * 1.1))
-      .style('font-size', '.7rem')
-      .text(d => f(d.percent) + '%')
+    // join.append('text')
+    //   .attr('class', 'text-percent')
+    //   .attr('text-anchor', 'middle')
+    //   .attr('x', d => xScale(d.cumulative) + (xScale(d.value) / 2))
+    //   .attr('y', (h / 2) - (halfBarHeight * 1.1))
+    //   .style('font-size', '.7rem')
+    //   .text(d => f(d.percent) + '%')
 
     setLoading(false)
   }
