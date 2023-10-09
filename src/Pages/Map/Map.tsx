@@ -172,12 +172,12 @@ const Map = () => {
               />
             </div>
         }
-        <div
-          className='w-full lg:w-1/3'
-          style={{ display: (showViewToggle && view === 'list') || !showViewToggle ? 'block' : 'none' }}
-        >
-          <MapSidebar />
-        </div>
+
+        {
+          (showViewToggle && view === 'list') || !showViewToggle ?
+            <div className='w-full lg:w-1/3 bg-slate-100'><MapSidebar /></div> :
+            <></>
+        }
       </div>
       {selectEvent === null ?
         <></> :
