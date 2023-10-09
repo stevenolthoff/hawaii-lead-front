@@ -25,6 +25,7 @@ const MapFilter = ({ options, onSelect, placeholder, disabled }: IMapFilterProps
   const onChange = (value: string | null) => {
     setSelectedOption(value)
     onSelect(value)
+    if (value === null) setQuery('')
   }
 
   const ClearButtonOrNull = () => {
