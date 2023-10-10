@@ -70,7 +70,7 @@ const MapPopup = ({
           width: `${WIDTH_PX}px`
         }}
       >
-        <SchoolSummaryCard schoolName={schoolName ?? ''} school={school} />
+        <SchoolSummaryCard schoolName={String(schoolName) ?? ''} school={school} />
       </div>
     )
   } else {

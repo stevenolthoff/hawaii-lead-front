@@ -119,6 +119,13 @@ const Row = ({ fixture, id }: IRowProps) => {
     }
     return text
   }
+  const getPhotoLabel = (fixture: IFixture) => {
+    if (fixture.replaced_fixtures_photo_url === null || fixture.replaced_fixtures_photo_url === '') {
+      return 'No Photo'
+    } else {
+      return 'Photo'
+    }
+  }
   const onClickRow = () => {
     setExpand(!expand)
   }
@@ -161,6 +168,12 @@ const Row = ({ fixture, id }: IRowProps) => {
             }
           ]}
         />
+        <div
+          key={`fixture-${id}-photo`}
+          className='text-sm break-word group-hover:bg-slate-200 group-hover:cursor-pointer p-2'
+        >
+          {getPhotoLabel(fixture)}
+        </div>
       </div>
       {
         expand ?
@@ -187,6 +200,7 @@ const Row = ({ fixture, id }: IRowProps) => {
               <div className={dividerClassName}>|</div>
               <pre className='font-sans'>{getReleasedTooltip(fixture)}</pre>
             </div>
+            <div></div>
           </div> :
           null
       }
@@ -269,7 +283,7 @@ const School = () => {
           inProgress={numInProgress}
           complete={numComplete}
         />
-        <div className='grid grid-cols-7'>
+        <div className='grid grid-cols-8'>
           <div className={tableHeaderClassName}>Room No</div>
           <div className={tableHeaderClassName}>Type</div>
           <div className={tableHeaderClassName + ' text-center'}>Replacement Scheduled</div>
@@ -277,6 +291,7 @@ const School = () => {
           <div className={tableHeaderClassName + ' text-center'}>Sample Collected</div>
           <div className={tableHeaderClassName + ' text-center'}>Results Received</div>
           <div className={tableHeaderClassName + ' text-center'}>Released</div>
+          <div className={tableHeaderClassName + ' text-center'}>Replacement Photo</div>
 
           {
             _.sortBy(selectedSchool?.fixtures, ['room_no', 'source_type', 'asc', 'asc'])

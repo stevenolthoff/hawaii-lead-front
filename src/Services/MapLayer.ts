@@ -37,6 +37,7 @@ function parseAsGeoJSON (schools: IAPIResponse['bySchool']): any {
       geometry: {
         type: 'Point',
         coordinates: [latitude, longitude]
+        // coordinates: [longitude, latitude]
       },
       properties: {
         'point-radius': 8,

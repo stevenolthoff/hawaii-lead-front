@@ -85,27 +85,22 @@ const Map = () => {
     if (data === null) return
     const dataToUse = filteredSchools === null ? data.bySchool : filteredSchools
     const newLayer = getLayer(dataToUse)
-    // newLayer.onMouseOver = setSelectEvent
     newLayer.onMouseOver = event => {
       if (event?.data?.windowPoint !== undefined) {
-        // setPopupCoordinates([event.data.windowPoint.x, event.data.windowPoint.y])
         setScreenCoordinates([event.data.windowPoint.x, event.data.windowPoint.y])
       }
       if (event?.data?.feature?.properties?.data !== undefined) {
-        // setPopupSchool(event?.data?.feature?.properties?.data)
         setSchoolToPreview(event?.data?.feature?.properties?.data)
       }
     }
     newLayer.onMouseOut = () => {
-      // setSelectEvent(null)
-      // setPopupCoordinates([undefined, undefined])
-      // setPopupSchool(undefined)
       setScreenCoordinates(null)
       setSchoolToPreview(null)
       newLayer.implementation?.unsetSelectedFeature()
     }
     newLayer.onSelect = (event: ILayerQueryEvent) => {
       selectSchool(event.data?.feature?.properties?.data?.school ?? null)
+      console.log(event.data)
     }
     setLayer(newLayer)
   }
