@@ -183,7 +183,7 @@ const Map = () => {
         </div>
         <div className='max-w-full h-full py-2 lg:py-1 no-scrollbar grow overflow-x-scroll sm:overflow-visible'><MapFilters /></div>
       </div>
-      <div className='flex h-[calc(100%-8rem)] max-h-[calc(100%-8rem)]'>
+      <div className='flex h-[calc(100%-8rem)] max-h-[calc(100%-8rem)] lg:h-[calc(100%-6rem)] lg:max-h-[calc(100%-6rem)]'>
         <MapLoader />
         {
           layer === undefined ? <></> :
