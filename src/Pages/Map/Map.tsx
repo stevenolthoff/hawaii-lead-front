@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useDataContext } from '@/Contexts/DataContext'
 import { Map as AxiomMap, IGeoJSONLayerProps, ILayerQueryEvent, IMap, IStyleableMapProps } from '@axdspub/axiom-maps'
 import { Button, Loader } from '@axdspub/axiom-ui-utilities'
-import getLayer from '@/Services/MapLayer'
+import getLayer, { ISchool } from '@/Services/MapLayer'
 import MapFilters from '@/Components/MapFilters'
 import MapPopup from '@/Components/MapPopup'
 import MapSidebar from '@/Components/MapSidebar'
@@ -12,6 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { getSchoolIdFromSlug, getSlugFromSchoolId } from '@/Services/SchoolId'
 import { useWindowSize } from 'usehooks-ts'
 import { ListBulletIcon, MapIcon } from '@heroicons/react/24/outline'
+import { useMapPreviewContext } from '@/Contexts/MapPreviewContext'
 
 interface IMobileViewToggleProps {
   show: boolean
@@ -50,9 +51,12 @@ const Map = () => {
   const DESKTOP_WIDTH_PX = 1024
   const mapContainerRef = useRef<HTMLDivElement>(null)
   const { data, filteredSchools } = useDataContext()
+  const { school: schoolToPreview, screenCoordinates, coordinates, setSchoolToPreview, setScreenCoordinates } = useMapPreviewContext()
   const [map, setMap] = useState<IMap | undefined>(undefined)
   const [layer, setLayer] = useState<IGeoJSONLayerProps | undefined>(undefined)
-  const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
+  // const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
+  // const [popupCoordinates, setPopupCoordinates] = useState<[number, number] | [undefined, undefined]>([undefined, undefined])
+  // const [popupSchool, setPopupSchool] = useState<ISchool | undefined>(undefined)
   const { width } = useWindowSize()
   const [isMobileView, setIsMobileView] = useState(width < DESKTOP_WIDTH_PX)
   const [showViewToggle, setShowViewToggle] = useState(width < DESKTOP_WIDTH_PX)
@@ -81,9 +85,23 @@ const Map = () => {
     if (data === null) return
     const dataToUse = filteredSchools === null ? data.bySchool : filteredSchools
     const newLayer = getLayer(dataToUse)
-    newLayer.onMouseOver = setSelectEvent
+    // newLayer.onMouseOver = setSelectEvent
+    newLayer.onMouseOver = event => {
+      if (event?.data?.windowPoint !== undefined) {
+        // setPopupCoordinates([event.data.windowPoint.x, event.data.windowPoint.y])
+        setScreenCoordinates([event.data.windowPoint.x, event.data.windowPoint.y])
+      }
+      if (event?.data?.feature?.properties?.data !== undefined) {
+        // setPopupSchool(event?.data?.feature?.properties?.data)
+        setSchoolToPreview(event?.data?.feature?.properties?.data)
+      }
+    }
     newLayer.onMouseOut = () => {
-      setSelectEvent(null)
+      // setSelectEvent(null)
+      // setPopupCoordinates([undefined, undefined])
+      // setPopupSchool(undefined)
+      setScreenCoordinates(null)
+      setSchoolToPreview(null)
       newLayer.implementation?.unsetSelectedFeature()
     }
     newLayer.onSelect = (event: ILayerQueryEvent) => {
@@ -122,6 +140,14 @@ const Map = () => {
       setShouldShowMap(true)
     }
   }, [showViewToggle, view])
+
+  useEffect(() => {
+    if (layer === undefined || coordinates === null) return
+    const newScreenCoordinates = layer.implementation?.getWindowPoint(coordinates[1], coordinates[0])
+    const mapYOffset = mapContainerRef.current?.offsetTop ?? 0
+    if (newScreenCoordinates === undefined) setScreenCoordinates(null)
+    else setScreenCoordinates([newScreenCoordinates.x, newScreenCoordinates.y + mapYOffset])
+  }, [coordinates])
 
   const MapLoader = () => {
     if (layer !== undefined) return <></>
@@ -179,13 +205,13 @@ const Map = () => {
             <></>
         }
       </div>
-      {selectEvent === null ?
+      {schoolToPreview === null || screenCoordinates === null ?
         <></> :
         <MapPopup
           mapViewport={mapContainerRef.current?.getBoundingClientRect()}
-          featureX={selectEvent?.data?.windowPoint.x}
-          featureY={selectEvent?.data?.windowPoint.y}
-          school={selectEvent?.data?.feature?.properties?.data}
+          featureX={screenCoordinates[0]}
+          featureY={screenCoordinates[1]}
+          school={schoolToPreview}
         />
       }
       {selectedSchool === null ?

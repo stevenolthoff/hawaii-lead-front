@@ -21,7 +21,7 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete }: IStackedBarCh
     const containerPxWidth = parseInt(container?.style('width'))
     if (container === null) return
     const chart = d3.select(`#${id}`).selectChildren('svg')
-    console.log('chart selection', chart, id)
+
     if (!chart.empty()) {
       chart.remove()
     }
@@ -57,7 +57,7 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete }: IStackedBarCh
     const h = height * 0.66
 
     const total = d3.sum(data, d => d.value)
-    console.info('total', total)
+
 
     function groupDataFunc(data: any): { cumulative: number, label: string, percent: number, value: number, color: string }[] {
       // use a scale to get percentage values
@@ -83,7 +83,6 @@ const StackedBarChart = ({ id, notStarted, inProgress, complete }: IStackedBarCh
     }
 
     const groupData = groupDataFunc(data)
-    console.info('groupData', groupData)
 
     // const sel = d3.select(ref.current)
     const sel = container

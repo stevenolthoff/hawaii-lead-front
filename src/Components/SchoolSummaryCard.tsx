@@ -4,15 +4,17 @@ import { useDataContext } from '@/Contexts/DataContext'
 import { getNumCompleteFixtures, getNumInProgressFixtures, getStatusFromCounts } from '@/Services/SchoolStatus'
 import { useMapPreviewContext } from '@/Contexts/MapPreviewContext'
 import { useSchoolContext } from '@/Contexts/SchoolContext'
+import { ISchool, findCoordinates } from '@/Services/MapLayer'
 
 interface ISchoolSummaryCardProps {
   schoolName: string
+  school: ISchool
 }
 
-const SchoolSummaryCard = ({ schoolName }: ISchoolSummaryCardProps) => {
+const SchoolSummaryCard = ({ schoolName, school }: ISchoolSummaryCardProps) => {
   const { filteredSchools } = useDataContext()
   const { selectSchool } = useSchoolContext()
-  const { setSchoolToPreview } = useMapPreviewContext()
+  const { setSchoolToPreview, setPreviewCoordinates } = useMapPreviewContext()
   if (filteredSchools === null) {
     return <></>
   }
@@ -26,8 +28,14 @@ const SchoolSummaryCard = ({ schoolName }: ISchoolSummaryCardProps) => {
     <div
       className='w-full'
       onClick={() => selectSchool(schoolName)}
-      onMouseEnter={() => setSchoolToPreview(schoolName)}
-      onMouseLeave={() => setSchoolToPreview(null)}
+      onMouseEnter={() => {
+        setSchoolToPreview(school)
+        setPreviewCoordinates(findCoordinates(school.fixtures))
+      }}
+      onMouseLeave={() => {
+        setSchoolToPreview(null)
+        setPreviewCoordinates(null)
+      }}
     >
       <div className='flex justify-between'>
         <p className='font-semibold leading-tight'>{schoolName}</p>

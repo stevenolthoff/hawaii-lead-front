@@ -1,13 +1,12 @@
-import React, { RefObject, ReactElement, useEffect, useRef, useState } from 'react'
+import React, { ReactElement, useEffect, useRef, useState } from 'react'
 import { ISchool } from '@/Services/MapLayer'
-import { getNumCompleteFixtures, getNumInProgressFixtures } from '@/Services/SchoolStatus'
 import SchoolSummaryCard from './SchoolSummaryCard'
 
 interface IMapPopupProps {
   mapViewport?: DOMRect
   featureX?: number
   featureY?: number
-  school?: ISchool
+  school: ISchool
 }
 
 const MapPopup = ({
@@ -16,7 +15,7 @@ const MapPopup = ({
   featureY,
   school
 }: IMapPopupProps): ReactElement => {
-  const shouldShow = () => featureX !== undefined && featureY !== undefined && mapViewport !== undefined && school !== undefined
+  const shouldShow = () => featureX !== undefined && featureY !== undefined && mapViewport !== undefined
   const [show, setShow] = useState(shouldShow())
   const ref = useRef<HTMLDivElement>(null)
   const HEIGHT_REM = 8
@@ -27,7 +26,7 @@ const MapPopup = ({
   const POPUP_MARGIN_REM = 1
   const POPUP_MARGIN_PX = POPUP_MARGIN_REM * PX_IN_REM
 
-  const schoolName = school?.school
+  const schoolName = school.school
 
   useEffect(() => {
     setShow(shouldShow())
@@ -71,7 +70,7 @@ const MapPopup = ({
           width: `${WIDTH_PX}px`
         }}
       >
-        <SchoolSummaryCard schoolName={schoolName ?? ''} />
+        <SchoolSummaryCard schoolName={schoolName ?? ''} school={school} />
       </div>
     )
   } else {

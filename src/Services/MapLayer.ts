@@ -50,7 +50,7 @@ function parseAsGeoJSON (schools: IAPIResponse['bySchool']): any {
   }).filter(featureOrNull => featureOrNull !== null)
 }
 
-function findCoordinates (fixtures: IFixture[]): [number, number] | null {
+export function findCoordinates (fixtures: IFixture[]): [number, number] | null {
   const fixture = fixtures.find(fixture => fixture.x !== null && fixture.y !== null)
   if (fixture === undefined) return null
   return [Number(fixture.x), Number(fixture.y)]

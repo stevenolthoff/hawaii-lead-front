@@ -45,14 +45,11 @@ const RollupStats = () => {
 
   useEffect(() => {
     if (filteredSchools === null) return
-    console.log('filteredSchools changed', filteredSchools)
     setStats(getStats(filteredSchools))
-    console.log(filteredSchools)
     setAllFixtures(Object.values(filteredSchools ?? []).flat())
   }, [filteredSchools])
 
   useEffect(() => {
-    console.log('allFixtures changed')
     const complete = getTotalCompleteFixtures()
     const inProgress = getTotalInProgressFixtures()
     setTotalComplete(complete)

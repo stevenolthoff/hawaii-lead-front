@@ -1,35 +1,60 @@
 import React, { PropsWithChildren, createContext, useContext, useState } from 'react'
+import { ISchool } from '@/Services/MapLayer'
 
 interface IState {
-  school: string | null
+  school: ISchool | null
+  coordinates: [number, number] | null
+  screenCoordinates: [number, number] | null
 }
 
 const defaultState: IState = {
-  school: null
+  school: null,
+  coordinates: null,
+  screenCoordinates: null
 }
 
 interface IMapPreviewContext {
-  school: string | null
-  setSchoolToPreview: (school: string | null) => void
+  school: ISchool | null
+  coordinates: [number, number] | null
+  screenCoordinates: [number, number] | null
+  setSchoolToPreview: (school: ISchool | null) => void
+  setPreviewCoordinates: (coordinates: [number, number] | null) => void
+  setScreenCoordinates: (coordinates: [number, number] | null) => void
 }
 
 const defaultContext: IMapPreviewContext = {
   school: null,
-  setSchoolToPreview: (school: string | null) => { console.error('IMapPreviewContext.setSchool not implemented.') }
+  coordinates: null,
+  screenCoordinates: null,
+  setSchoolToPreview: (school: ISchool | null) => { console.error('IMapPreviewContext.setSchool not implemented.') },
+  setPreviewCoordinates: (coordinates: [number, number] | null) => { console.error('IMapPreviewContext.setPreviewCoordinates not implemented.') },
+  setScreenCoordinates: (coordinates: [number, number] | null) => { console.error('IMapPreviewContext.setScreenCoordinates not implemented.') }
 }
 
 const MapPreviewContext = createContext<IMapPreviewContext>(defaultContext)
 
 export default function MapPreviewContextProvider ({ children }: PropsWithChildren) {
-  const [school, setSchool] = useState<string | null>(defaultState.school)
-  function setSchoolToPreview (school: string | null) {
+  const [school, setSchool] = useState<ISchool | null>(defaultState.school)
+  const [coordinates, setCoordinates] = useState<[number, number] | null>(defaultState.coordinates)
+  const [screenCoordinates, setScreenCoordinatesState] = useState<[number, number] | null>(defaultState.screenCoordinates)
+  function setSchoolToPreview (school: ISchool | null) {
     setSchool(school)
+  }
+  function setPreviewCoordinates (coordinates: [number, number] | null) {
+    setCoordinates(coordinates)
+  }
+  function setScreenCoordinates (coordinates: [number, number] | null) {
+    setScreenCoordinatesState(coordinates)
   }
   return (
     <MapPreviewContext.Provider
       value={{
         school,
-        setSchoolToPreview
+        coordinates,
+        screenCoordinates,
+        setSchoolToPreview,
+        setPreviewCoordinates,
+        setScreenCoordinates
       }}
     >
       {children}

@@ -19,6 +19,10 @@ const SchoolList = () => {
           >
             <SchoolSummaryCard
               schoolName={schoolName}
+              school={{
+                school: schoolName,
+                fixtures: filteredSchools[schoolName]
+              }}
             />
           </div>
         ))}
