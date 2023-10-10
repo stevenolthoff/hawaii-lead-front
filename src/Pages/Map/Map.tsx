@@ -174,16 +174,16 @@ const Map = () => {
 
   return (
     <div className='w-full max-w-full h-full max-h-full flex flex-col'>
-      <div className='h-[6rem] max-h-[6rem] flex flex-col divide-y border-b border-slate-200'>
+      <div className='h-[8rem] max-h-[8rem] lg:h-[6rem] lg:max-h-[6rem] flex flex-col divide-y border-b border-slate-200'>
         <div className='flex px-4 py-2 w-full text-center'>
           <a href='https://health.hawaii.gov/heer/environmental-health/highlighted-projects/WIIN/'>
             <img src='/DOH-Logo-with-text-circling.png' width='40' />
           </a>
           <div className='px-4 py-2 font-semibold text-slate-800 text-center w-full'>Hawaii Lead Water Monitor</div>
         </div>
-        <div className='max-w-full no-scrollbar grow overflow-x-scroll sm:overflow-visible'><MapFilters /></div>
+        <div className='max-w-full h-full py-2 lg:py-1 no-scrollbar grow overflow-x-scroll sm:overflow-visible'><MapFilters /></div>
       </div>
-      <div className='flex h-[calc(100%-6rem)] max-h-[calc(100%-6rem)]'>
+      <div className='flex h-[calc(100%-8rem)] max-h-[calc(100%-8rem)]'>
         <MapLoader />
         {
           layer === undefined ? <></> :

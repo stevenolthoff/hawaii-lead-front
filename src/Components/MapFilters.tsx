@@ -9,9 +9,10 @@ interface IMapFilterProps {
   options: string[]
   onSelect: (options: string | null) => void
   placeholder: string
+  className?: string
   disabled?: boolean
 }
-const MapFilter = ({ options, onSelect, placeholder, disabled }: IMapFilterProps) => {
+const MapFilter = ({ options, onSelect, placeholder, className, disabled }: IMapFilterProps) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [query, setQuery] = useState('')
 
@@ -44,11 +45,11 @@ const MapFilter = ({ options, onSelect, placeholder, disabled }: IMapFilterProps
       onChange={onChange}
       nullable
     >
-      <div className='max-w-full z-20 bg-slate-100'>
-        <div className='flex'>
-          <Combobox.Button className='flex items-center relative'>
+      <div className={`max-w-full min-w-[150px] h-full z-20 bg-slate-100 ${className}`}>
+        <div className='flex h-full'>
+          <Combobox.Button className='flex items-center relative w-full'>
             <Combobox.Input
-              className='px-4 py-2 rounded-sm h-8 text-xs'
+              className='px-4 py-2 rounded-sm text-xs w-full h-full'
               onChange={(event) => setQuery(event.target.value)}
               placeholder={placeholder}
             /> 
@@ -134,7 +135,8 @@ const MapFilters = () => {
       <MapFilter
         options={schools}
         onSelect={onSelectSchool}
-        placeholder='Schools'
+        placeholder='Search for schools'
+        className='lg:w-80'
       />
       <MapFilter
         options={islands}
