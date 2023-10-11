@@ -11,6 +11,7 @@ import { useSchoolContext } from '@/Contexts/SchoolContext'
 import { useNavigate } from 'react-router-dom'
 import _ from 'lodash'
 import { getFixtureLabel } from '@/Services/FixtureLabel'
+import Image from '@/Components/Image'
 
 interface IStepperProps {
   id: string
@@ -119,13 +120,6 @@ const Row = ({ fixture, id }: IRowProps) => {
     }
     return text
   }
-  const getPhotoLabel = (fixture: IFixture) => {
-    if (fixture.replaced_fixtures_photo_url === null || fixture.replaced_fixtures_photo_url === '') {
-      return 'No Photo'
-    } else {
-      return 'Photo'
-    }
-  }
   const onClickRow = () => {
     setExpand(!expand)
   }
@@ -170,9 +164,9 @@ const Row = ({ fixture, id }: IRowProps) => {
         />
         <div
           key={`fixture-${id}-photo`}
-          className='text-sm break-word group-hover:bg-slate-200 group-hover:cursor-pointer p-2'
+          className='text-sm break-word group-hover:bg-slate-200 group-hover:cursor-pointer p-2 flex justify-center'
         >
-          {getPhotoLabel(fixture)}
+          <Image src={fixture.replaced_fixtures_photo_url} />
         </div>
       </div>
       {
