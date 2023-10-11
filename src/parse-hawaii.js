@@ -1,5 +1,3 @@
-// const AX_COPY_GSHEET = 'https://docs.google.com/spreadsheets/d/1ThB2nRoiAYRPqMCXVfMomq7GGoWg_OmyH5xjcQgNEz4/pub?gid=1117954625&single=true&output=tsv'
-// const AX_COPY_GSHEET = 'https://docs.google.com/spreadsheets/u/0/d/1ThB2nRoiAYRPqMCXVfMomq7GGoWg_OmyH5xjcQgNEz4/export?format=tsv&id=1ThB2nRoiAYRPqMCXVfMomq7GGoWg_OmyH5xjcQgNEz4&gid=1117954625'
 const AX_COPY_GSHEET = 'https://docs.google.com/spreadsheets/d/1iVP9fjFfulsDM6sKvDjewZiGI8Ns6jrkA3FQG39wcFo/export?format=tsv&id=1iVP9fjFfulsDM6sKvDjewZiGI8Ns6jrkA3FQG39wcFo&gid=1117954625'
 
 function parseCell(val,key){
@@ -16,7 +14,6 @@ function parseCell(val,key){
 
 async function getData(){
   const text = await(await fetch(AX_COPY_GSHEET)).text()
-  //   console.log(text)
   const rows = text.split('\r\n')
   const header = rows[0].split('\t')
   const columns = header.map((h,i)=>{
@@ -30,13 +27,7 @@ async function getData(){
     const o = {}
     const row = r.split('\t')
     columns.forEach(c=>{
-      if (row[0] === 'Ahuimanu Elementary') {
-        // console.log(parseCell(row[c.index],c.key))
-      }
       o[c.key] = parseCell(row[c.index],c.key)
-      if (row[0] === 'Ahuimanu Elementary') {
-        console.log(o)
-      }
     })
     return o
   })
@@ -53,7 +44,13 @@ function parseData(data){
     bySchool[row.school] = bySchool[row.school] || []
     bySchool[row.school].push(row)
   })
+  const byJobId = {}
+  data.forEach(row=>{
+    byJobId[row['job_no.']] = byJobId[row['job_no.']] || []
+    byJobId[row['job_no.']].push(row)
+  })
   return {
+    byJobId,
     bySchool,
     data
   }

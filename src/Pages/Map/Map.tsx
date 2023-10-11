@@ -99,8 +99,7 @@ const Map = () => {
       newLayer.implementation?.unsetSelectedFeature()
     }
     newLayer.onSelect = (event: ILayerQueryEvent) => {
-      selectSchool(event.data?.feature?.properties?.data?.school ?? null)
-      console.log(event.data)
+      selectSchool(event.data?.feature?.properties?.data?.id ?? null)
     }
     setLayer(newLayer)
   }
@@ -118,7 +117,7 @@ const Map = () => {
 
   useEffect(() => {
     if (selectedSchool !== null) {
-      navigate({ pathname: `/schools/${getSlugFromSchoolId(selectedSchool?.school)}` })
+      navigate({ pathname: `/schools/${getSlugFromSchoolId(selectedSchool?.id)}` })
     }
   }, [selectedSchool])
 

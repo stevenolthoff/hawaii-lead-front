@@ -2,6 +2,7 @@ import { IGeoJSONLayerProps } from '@axdspub/axiom-maps'
 import { IAPIResponse, Fixtures, SchoolKey, ProgressStatus, IFixture } from '@/Contexts/DataContext'
 import { getColorForStatus } from './SchoolStatus'
 export interface ISchool {
+  id: string
   school: SchoolKey
   fixtures: IFixture[]
 }
@@ -25,10 +26,13 @@ function parseAsGeoJSON (schools: IAPIResponse['bySchool']): any {
   return schoolKeys.map(schoolKey => {
     const school = schoolKey as SchoolKey
     const fixtures = schools[school]
+    const id = findJobId(fixtures)
+    if (id === 'no-id') return null
     const coordinates = findCoordinates(fixtures)
     const latitude = coordinates === null ? null : coordinates[0]
     const longitude = coordinates === null ? null : coordinates[1]
     const data: ISchool = {
+      id,
       school,
       fixtures
     }
@@ -37,7 +41,6 @@ function parseAsGeoJSON (schools: IAPIResponse['bySchool']): any {
       geometry: {
         type: 'Point',
         coordinates: [latitude, longitude]
-        // coordinates: [longitude, latitude]
       },
       properties: {
         'point-radius': 8,
@@ -49,6 +52,12 @@ function parseAsGeoJSON (schools: IAPIResponse['bySchool']): any {
       }
     }
   }).filter(featureOrNull => featureOrNull !== null)
+}
+
+export function findJobId (fixtures: IFixture[]): string {
+  const fixture = fixtures.find(fixture => fixture['job_no.'] !== null && fixture['job_no.'] !== '')
+  if (fixture === undefined) return 'no-id'
+  return fixture['job_no.']
 }
 
 export function findCoordinates (fixtures: IFixture[]): [number, number] | null {

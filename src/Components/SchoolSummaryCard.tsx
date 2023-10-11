@@ -27,7 +27,7 @@ const SchoolSummaryCard = ({ schoolName, school }: ISchoolSummaryCardProps) => {
   return (
     <div
       className='w-full'
-      onClick={() => selectSchool(schoolName)}
+      onClick={() => selectSchool(school.id)}
       onMouseEnter={() => {
         setSchoolToPreview(school)
         setPreviewCoordinates(findCoordinates(school.fixtures))

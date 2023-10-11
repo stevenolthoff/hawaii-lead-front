@@ -231,28 +231,6 @@ const School = () => {
   const numInProgress = getNumInProgressFixtures(selectedSchool?.fixtures ?? [])
   const numNotStarted = (selectedSchool?.fixtures.length ?? 0) - numComplete - numInProgress
   const tableHeaderClassName = 'text-xs leading-none font-semibold text-slate-500 pb-2 break-words'
-  const bubbleIsFilled = (fixture: IFixture, key: string): boolean => {
-    return fixture[key] !== null && String(fixture[key]).toLowerCase() !== 'no'
-  }
-  const getFormattedDate = (value: string | null) => {
-    return value === null ? undefined : DateTime.fromISO(value).toLocaleString({ dateStyle: 'medium' })
-  }
-  const getReleasedTooltip = (fixture: IFixture): string | undefined => {
-    let text = ''
-    const released_for_unrestricted_use = fixture['released_for_unrestricted_use?']
-    if (released_for_unrestricted_use === '' || released_for_unrestricted_use === null) return undefined
-    const { flush_result_ppb, confirmation_result_ppb } = fixture
-    if (released_for_unrestricted_use !== '' && released_for_unrestricted_use !== null) {
-      text += `Released Status:\t\t\t\t${released_for_unrestricted_use}`
-    }
-    if (flush_result_ppb !== '' && flush_result_ppb !== null) {
-      text += `\nFlush Result:\t\t\t\t${flush_result_ppb} PPB`
-    }
-    if (confirmation_result_ppb !== '' && confirmation_result_ppb !== null) {
-      text += `\nConfirmation Result:\t\t${confirmation_result_ppb} PPB`
-    }
-    return text
-  }
   if (selectedSchool === null) {
     return <></>
   }
@@ -274,11 +252,11 @@ const School = () => {
             onClick={onClickOutside}
           />
         </div>
-        <p className='font-semibold text-xl'>{selectedSchool?.school}</p>
+        <p className='font-semibold text-xl'>{selectedSchool.school}</p>
         <p className='text-slate-500 text-lg'>{selectedSchool?.fixtures[0].island} / {selectedSchool?.fixtures[0].district}</p>
         <BubbleLegend />
         <StackedBarChart
-          id={`stacked-bar-chart-school-${selectedSchool.school.toLowerCase().replaceAll(' ', '-')}`}
+          id={`stacked-bar-chart-school-${selectedSchool.id.toLowerCase()}`}
           notStarted={numNotStarted}
           inProgress={numInProgress}
           complete={numComplete}

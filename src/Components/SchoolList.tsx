@@ -1,6 +1,6 @@
 import React from 'react'
+import { findJobId } from '@/Services/MapLayer'
 import { useDataContext } from '@/Contexts/DataContext'
-import { Loader } from '@axdspub/axiom-ui-utilities'
 import SchoolSummaryCard from './SchoolSummaryCard'
 
 const SchoolList = () => {
@@ -20,6 +20,7 @@ const SchoolList = () => {
             <SchoolSummaryCard
               schoolName={schoolName}
               school={{
+                id: findJobId(filteredSchools[schoolName]),
                 school: schoolName,
                 fixtures: filteredSchools[schoolName]
               }}

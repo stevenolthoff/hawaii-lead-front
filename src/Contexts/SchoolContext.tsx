@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, createContext, useContext, useState } from 'react'
 import { useDataContext } from '@/Contexts/DataContext'
-import { ISchool } from '@/Services/MapLayer'
+import { ISchool, findJobId } from '@/Services/MapLayer'
 
 interface IState {
   selectedSchool: ISchool | null
@@ -29,11 +29,11 @@ export default function SchoolContextProvider ({ children }: PropsWithChildren) 
     if (schoolId === null) {
       setSelectedSchool(null)
     } else {
-      const fixtures = data?.bySchool[schoolId]
+      const fixtures = data?.byJobId[schoolId]
       if (fixtures === undefined) {
         setSelectedSchool(null)
       } else {
-        const school: ISchool = { school: schoolId, fixtures }
+        const school: ISchool = { id: findJobId(fixtures), school: fixtures[0].school, fixtures }
         setSelectedSchool(school)
       }
     }
