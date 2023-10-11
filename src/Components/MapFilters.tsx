@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Combobox } from '@headlessui/react'
 import { ChevronUpDownIcon, XCircleIcon } from '@heroicons/react/20/solid'
 import { Transition } from '@headlessui/react'
+import { useWindowSize } from 'usehooks-ts'
 
 interface IMapFilterProps {
   options: string[]
@@ -15,7 +16,7 @@ interface IMapFilterProps {
 const MapFilter = ({ options, onSelect, placeholder, className, disabled }: IMapFilterProps) => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null)
   const [query, setQuery] = useState('')
-
+  const { width } = useWindowSize()
   const filteredOptions =
     query === ''
       ? options
@@ -37,7 +38,14 @@ const MapFilter = ({ options, onSelect, placeholder, className, disabled }: IMap
       /> :
       null
   }
-
+  const DESKTOP_BREAKPOINT_PX = 768
+  const getOptionsMaxHeight = () => {
+    if (width >= DESKTOP_BREAKPOINT_PX) {
+      return filteredOptions.length <= 10 ? `${36 * filteredOptions.length + 18}px` : ''
+    } else {
+      return filteredOptions.length <= 10 ? `${60 * filteredOptions.length + 18}px` : ''
+    }
+  }
   return (
     <Combobox
       disabled={options.length === 0 || disabled}
@@ -71,11 +79,11 @@ const MapFilter = ({ options, onSelect, placeholder, className, disabled }: IMap
           leaveTo="opacity-0"
         >
           <Combobox.Options
-            className='fixed h-full w-full left-0 sm:left-auto sm:absolute z-20 mt-1 bg-slate-100 sm:h-80 sm:max-w-80 sm:w-60 overflow-y-scroll py-2 rounded-sm text-sm no-scrollbar hover:cursor-pointer shadow-xl'
-            style={{ maxHeight: filteredOptions.length <= 10 ? `${36 * filteredOptions.length + 18}px` : '' }}
+            className='fixed h-full w-full left-0 sm:left-auto sm:absolute z-20 mt-1 bg-slate-100 sm:h-80 sm:max-w-80 sm:w-60 overflow-y-scroll py-2 rounded-sm text-lg lg:text-sm no-scrollbar hover:cursor-pointer shadow-xl'
+            style={{ maxHeight: getOptionsMaxHeight() }}
           >
             {filteredOptions.map((option) => (
-              <Combobox.Option key={option} value={option} className='hover:bg-slate-200 px-4 py-2 truncate ...'>
+              <Combobox.Option key={option} value={option} className='hover:bg-slate-200 px-4 py-4 lg:py-2 truncate ...'>
                 {option}
               </Combobox.Option>
             ))}

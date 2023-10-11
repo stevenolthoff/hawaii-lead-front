@@ -12,6 +12,8 @@ import { useNavigate } from 'react-router-dom'
 import _ from 'lodash'
 import { getFixtureLabel } from '@/Services/FixtureLabel'
 import Image from '@/Components/Image'
+import { ISchool } from '@/Services/MapLayer'
+import { useWindowSize } from 'usehooks-ts'
 
 interface IStepperProps {
   id: string
@@ -95,8 +97,9 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
 interface IRowProps {
   fixture: IFixture
   id: string
+  isMobile: boolean
 }
-const Row = ({ fixture, id }: IRowProps) => {
+const Row = ({ fixture, id, isMobile }: IRowProps) => {
   const [expand, setExpand] = useState(false)
   const bubbleIsFilled = (fixture: IFixture, key: string): boolean => {
     return fixture[key] !== null && String(fixture[key]).toLowerCase() !== 'no'
@@ -130,47 +133,66 @@ const Row = ({ fixture, id }: IRowProps) => {
       <div className='group contents' onClick={onClickRow}>
         <div
           key={`fixture-${id}-room-no`}
-          className='text-sm group-hover:bg-slate-200 group-hover:cursor-pointer p-2'
+          className='text-lg md:text-sm group-hover:bg-slate-200 group-hover:cursor-pointer p-2'
         >
           {fixture.room_no}
         </div>
         <div
           key={`fixture-${id}-source-type`}
-          className='text-sm break-word group-hover:bg-slate-200 group-hover:cursor-pointer p-2'
+          className='text-lg md:text-sm break-word group-hover:bg-slate-200 group-hover:cursor-pointer p-2'
         >
           {getFixtureLabel(fixture.source_type)}
         </div>
-        <Stepper
-          key={`fixture-${id}-stepper`}
-          id={id}
-          className='col-span-5 group-hover:bg-slate-200 group-hover:cursor-pointer'
-          data={[
-            {
-              filled: bubbleIsFilled(fixture, 'date_replacement_scheduled')
-            },
-            {
-              filled: bubbleIsFilled(fixture, 'date_replaced')
-            },
-            {
-              filled: bubbleIsFilled(fixture, 'confirmation_sample_collection_date'),
-            },
-            {
-              filled: bubbleIsFilled(fixture, 'date_results_received')
-            },
-            {
-              filled: bubbleIsFilled(fixture, 'released_for_unrestricted_use?')
-            }
-          ]}
-        />
-        <div
-          key={`fixture-${id}-photo`}
-          className='text-sm break-word group-hover:bg-slate-200 group-hover:cursor-pointer p-2 flex justify-center'
-        >
-          <Image src={fixture.replaced_fixtures_photo_url} />
-        </div>
+        {
+          isMobile ?
+            <div className='group-hover:bg-slate-200 group-hover:cursor-pointer text-center flex w-full h-full justify-center items-center'>
+              {
+                bubbleIsFilled(fixture, 'released_for_unrestricted_use?') ?
+                  <div className='w-4 h-4 bg-green-500 rounded text-white'>
+                    <CheckIcon width='1rem' height='1rem' />
+                  </div>
+                  :
+                  <div className='w-4 h-4 bg-red-500 rounded text-white'>
+                    <XMarkIcon width='1rem' height='1rem' />
+                  </div>
+              }
+            </div>:
+            <Stepper
+              key={`fixture-${id}-stepper`}
+              id={id}
+              className='col-span-5 group-hover:bg-slate-200 group-hover:cursor-pointer'
+              data={[
+                {
+                  filled: bubbleIsFilled(fixture, 'date_replacement_scheduled')
+                },
+                {
+                  filled: bubbleIsFilled(fixture, 'date_replaced')
+                },
+                {
+                  filled: bubbleIsFilled(fixture, 'confirmation_sample_collection_date'),
+                },
+                {
+                  filled: bubbleIsFilled(fixture, 'date_results_received')
+                },
+                {
+                  filled: bubbleIsFilled(fixture, 'released_for_unrestricted_use?')
+                }
+              ]}
+            />
+        }
+        {
+          isMobile ?
+            <></> :
+            <div
+              key={`fixture-${id}-photo`}
+              className='text-sm break-word group-hover:bg-slate-200 group-hover:cursor-pointer p-2 flex justify-center'
+            >
+              <Image src={fixture.replaced_fixtures_photo_url} />
+            </div>
+        }
       </div>
       {
-        expand ?
+        expand && !isMobile ?
           <div className='contents'>
             <div></div>
             <div></div>
@@ -198,8 +220,89 @@ const Row = ({ fixture, id }: IRowProps) => {
           </div> :
           null
       }
+      {
+        expand && isMobile ?
+          <div className='contents'>
+            <div className='col-span-3 text-slate-800 bg-slate-200 border-y-slate-300 border-y px-2 py-2'>
+              <div className=''>
+                <div className='text-lg font-semibold'>Replacement Scheduled</div>
+                <div>{getFormattedDate(fixture['date_replacement_scheduled'])}</div>
+              </div>
+              <div className=''>
+                <div className='text-lg font-semibold'>Date Replaced</div>
+                <div>{getFormattedDate(fixture['date_replaced'])}</div>
+              </div>
+              <div className=''>
+                <div className='text-lg font-semibold'>Confirmation Collection Date</div>
+                <div>{getFormattedDate(fixture['confirmation_sample_collection_date'])}</div>
+              </div>
+              <div className=''>
+                <div className='text-lg font-semibold'>Date Results Received</div>
+                <div>{getFormattedDate(fixture['date_results_received'])}</div>
+              </div>
+              <div className=''>
+                <div className='text-lg font-semibold'>Final Results</div>
+                <div><pre className='font-sans'>{getReleasedTooltip(fixture)}</pre></div>
+              </div>
+            </div>
+          </div> :
+          <></>
+      }
     </div>
   )
+}
+
+const DesktopTable = ({ selectedSchool }: { selectedSchool: ISchool }) => {
+  const { width } = useWindowSize()
+  const tableHeaderClassName = 'text-xs leading-none font-semibold text-slate-500 pb-2 break-words'
+  const DESKTOP_BREAKPOINT_PX = 425
+  if (width >= DESKTOP_BREAKPOINT_PX) {
+    return (
+      <div className='grid grid-cols-8'>
+        <div className={tableHeaderClassName}>Room No</div>
+        <div className={tableHeaderClassName}>Type</div>
+        <div className={tableHeaderClassName + ' text-center'}>Replacement Scheduled</div>
+        <div className={tableHeaderClassName + ' text-center'}>Replacement Installed</div>
+        <div className={tableHeaderClassName + ' text-center'}>Sample Collected</div>
+        <div className={tableHeaderClassName + ' text-center'}>Results Received</div>
+        <div className={tableHeaderClassName + ' text-center'}>Released</div>
+        <div className={tableHeaderClassName + ' text-center'}>Replacement Photo</div>
+
+        {
+          _.sortBy(selectedSchool.fixtures, ['room_no', 'source_type', 'asc', 'asc'])
+            .map((fixture, i) => (
+              <Row key={i} id={`${i}`} fixture={fixture} isMobile={false} />
+            ))
+        }
+      </div>
+    )
+  } else {
+    return <></>
+  }
+}
+
+const MobileTable = ({ selectedSchool }: { selectedSchool: ISchool }) => {
+  const { width } = useWindowSize()
+  const tableHeaderClassName = 'text-xs leading-none font-semibold text-slate-500 pb-2 break-words'
+  const DESKTOP_BREAKPOINT_PX = 425
+  if (width < DESKTOP_BREAKPOINT_PX) {
+    return (
+      <div className='grid grid-cols-3'>
+        <div className={tableHeaderClassName}>Room No</div>
+        <div className={tableHeaderClassName}>Type</div>
+        <div className={tableHeaderClassName + ' text-center'}>Released</div>
+
+        {
+          _.sortBy(selectedSchool.fixtures, ['room_no', 'source_type', 'asc', 'asc'])
+            .map((fixture, i) => (
+              <Row key={i} id={`${i}`} fixture={fixture} isMobile={true} />
+            ))
+        }
+      </div>
+    )
+  } else {
+    return <></>
+  }
 }
 
 const School = () => {
@@ -235,7 +338,7 @@ const School = () => {
     >
       <div
         ref={cardRef}
-        className='sm:w-full lg:w-[80%] xl:w-[50%] h-full max-h-full bg-slate-100 py-4 px-4 pb-16 overflow-y-scroll hover:cursor-default scrollbox'
+        className='w-full lg:w-[80%] xl:w-[50%] h-full max-h-full bg-slate-100 py-4 px-4 pb-16 overflow-y-scroll hover:cursor-default'
         style={{
         }}
         onClick={onClickInside}
@@ -255,23 +358,8 @@ const School = () => {
           inProgress={numInProgress}
           complete={numComplete}
         />
-        <div className='grid grid-cols-8'>
-          <div className={tableHeaderClassName}>Room No</div>
-          <div className={tableHeaderClassName}>Type</div>
-          <div className={tableHeaderClassName + ' text-center'}>Replacement Scheduled</div>
-          <div className={tableHeaderClassName + ' text-center'}>Replacement Installed</div>
-          <div className={tableHeaderClassName + ' text-center'}>Sample Collected</div>
-          <div className={tableHeaderClassName + ' text-center'}>Results Received</div>
-          <div className={tableHeaderClassName + ' text-center'}>Released</div>
-          <div className={tableHeaderClassName + ' text-center'}>Replacement Photo</div>
-
-          {
-            _.sortBy(selectedSchool?.fixtures, ['room_no', 'source_type', 'asc', 'asc'])
-              .map((fixture, i) => (
-                <Row key={i} id={`${i}`} fixture={fixture} />
-              ))
-          }
-        </div>
+        <DesktopTable selectedSchool={selectedSchool} />
+        <MobileTable selectedSchool={selectedSchool} />
       </div>
     </div>
   )
