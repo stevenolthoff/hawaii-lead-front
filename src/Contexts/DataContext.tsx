@@ -73,7 +73,7 @@ export interface IFixture {
     'room_number': string | null
     'sample_point_name': string | null
     'school': string
-    'source_id': string | null
+    'source_id': string
     'source_type': string
 }
 

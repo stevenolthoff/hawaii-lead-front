@@ -55,9 +55,9 @@ function parseAsGeoJSON (schools: IAPIResponse['bySchool']): any {
 }
 
 export function findJobId (fixtures: IFixture[]): string {
-  const fixture = fixtures.find(fixture => fixture['job_number'] !== null && fixture['job_number'] !== '')
+  const fixture = fixtures.find(fixture => fixture.job_number !== null && fixture.job_number !== '')
   if (fixture === undefined) return 'no-id'
-  return fixture['job_number']
+  return fixture.job_number
 }
 
 export function findCoordinates (fixtures: IFixture[]): [number, number] | null {

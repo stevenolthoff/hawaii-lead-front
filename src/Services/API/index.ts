@@ -31,7 +31,7 @@ interface Feature {
     'room_number': string | null
     'sample_point_name': string | null
     'school': string
-    'source_id': string | null
+    'source_id': string
     'source_type': string
   }
 }
@@ -66,7 +66,7 @@ export default class API {
     }
     console.log(features)
 
-    const groupedByJobId = _.groupBy(features, feature => feature.id)
+    const groupedByJobId = _.groupBy(features, feature => feature.properties.job_number)
     const byJobId: Record<string, any> = {}
     Object.keys(groupedByJobId).forEach(jobId => {
       const featureArray = groupedByJobId[jobId]

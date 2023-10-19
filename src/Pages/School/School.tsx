@@ -111,7 +111,7 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
     let text = ''
     const { fixture_status } = fixture
     if (fixture_status === null) return <p className='text-slate-300 text-center'>No Data</p>
-    const { flush_sample_number, lead_ppb_confirmation } = fixture
+    const { lead_ppb_flush, lead_ppb_confirmation } = fixture
     if (fixture_status === 'flush_for_drinking') {
       text += 'Released?: Flush for 30 seconds'
     } else if (fixture_status === 'unrestricted') {
@@ -119,11 +119,11 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
     } else if (fixture_status === 'non_potable') {
       text += 'Non-Potable Use Only'
     }
-    if (flush_sample_number !== '' && flush_sample_number !== null) {
-      text += `\nFlush Sample: ${flush_sample_number} PPB`
+    if (lead_ppb_flush !== null) {
+      text += `\nFlush Test: ${lead_ppb_flush} PPB`
     }
     if (lead_ppb_confirmation !== null) {
-      text += `\nConfirmation: ${lead_ppb_confirmation} PPB`
+      text += `\nConfirmation Test: ${lead_ppb_confirmation} PPB`
     }
     return text
   }
