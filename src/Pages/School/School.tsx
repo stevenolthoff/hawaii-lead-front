@@ -101,7 +101,7 @@ interface IRowProps {
 }
 const Row = ({ fixture, id, isMobile }: IRowProps) => {
   const [expand, setExpand] = useState(false)
-  const bubbleIsFilled = (fixture: IFixture, key: string): boolean => {
+  const bubbleIsFilled = (fixture: IFixture, key: 'date_replaced' | 'date_replacement_scheduled' | 'confirmation_sample_collection_date' | 'date_results_received' | 'fixture_status'): boolean => {
     return fixture[key] !== null && String(fixture[key]).toLowerCase() !== 'no'
   }
   const getFormattedDate = (value: string | null) => {
@@ -109,17 +109,21 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
   }
   const getReleasedTooltip = (fixture: IFixture): string | ReactElement => {
     let text = ''
-    const released_for_unrestricted_use = fixture['released_for_unrestricted_use?']
-    if (released_for_unrestricted_use === '' || released_for_unrestricted_use === null) return <p className='text-slate-300 text-center'>No Data</p>
-    const { flush_result_ppb, confirmation_result_ppb } = fixture
-    if (released_for_unrestricted_use !== '' && released_for_unrestricted_use !== null) {
-      text += `Released?: ${released_for_unrestricted_use}`
+    const { fixture_status } = fixture
+    if (fixture_status === null) return <p className='text-slate-300 text-center'>No Data</p>
+    const { flush_sample_number, lead_ppb_confirmation } = fixture
+    if (fixture_status === 'flush_for_drinking') {
+      text += 'Released?: Flush for 30 seconds'
+    } else if (fixture_status === 'unrestricted') {
+      text += 'Released for unrestricted use'
+    } else if (fixture_status === 'non_potable') {
+      text += 'Non-Potable Use Only'
     }
-    if (flush_result_ppb !== '' && flush_result_ppb !== null) {
-      text += `\nFlush: ${flush_result_ppb} PPB`
+    if (flush_sample_number !== '' && flush_sample_number !== null) {
+      text += `\nFlush Sample: ${flush_sample_number} PPB`
     }
-    if (confirmation_result_ppb !== '' && confirmation_result_ppb !== null) {
-      text += `\nConfirmation: ${confirmation_result_ppb} PPB`
+    if (lead_ppb_confirmation !== null) {
+      text += `\nConfirmation: ${lead_ppb_confirmation} PPB`
     }
     return text
   }
@@ -135,7 +139,7 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
           key={`fixture-${id}-room-no`}
           className='text-lg md:text-sm group-hover:bg-slate-200 group-hover:cursor-pointer p-2'
         >
-          {fixture.room_no}
+          {fixture.room_number}
         </div>
         <div
           key={`fixture-${id}-source-type`}
@@ -147,7 +151,7 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
           isMobile ?
             <div className='group-hover:bg-slate-200 group-hover:cursor-pointer text-center flex w-full h-full justify-center items-center'>
               {
-                bubbleIsFilled(fixture, 'released_for_unrestricted_use?') ?
+                bubbleIsFilled(fixture, 'fixture_status') ?
                   <div className='w-4 h-4 bg-green-500 rounded text-white'>
                     <CheckIcon width='1rem' height='1rem' />
                   </div>
@@ -175,7 +179,7 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
                   filled: bubbleIsFilled(fixture, 'date_results_received')
                 },
                 {
-                  filled: bubbleIsFilled(fixture, 'released_for_unrestricted_use?')
+                  filled: bubbleIsFilled(fixture, 'fixture_status')
                 }
               ]}
             />
@@ -187,7 +191,7 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
               key={`fixture-${id}-photo`}
               className='text-sm break-word group-hover:bg-slate-200 group-hover:cursor-pointer p-2 flex justify-center'
             >
-              <Image src={fixture.replaced_fixtures_photo_url} />
+              <Image src={fixture.replaced_fixtures_photo_url ?? undefined} />
             </div>
         }
       </div>

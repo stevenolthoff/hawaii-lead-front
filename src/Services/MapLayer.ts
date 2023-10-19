@@ -1,5 +1,5 @@
 import { IGeoJSONLayerProps } from '@axdspub/axiom-maps'
-import { IAPIResponse, Fixtures, SchoolKey, ProgressStatus, IFixture } from '@/Contexts/DataContext'
+import { IAPIResponse, SchoolKey, ProgressStatus, IFixture } from '@/Contexts/DataContext'
 import { getColorForStatus } from './SchoolStatus'
 export interface ISchool {
   id: string
@@ -55,18 +55,18 @@ function parseAsGeoJSON (schools: IAPIResponse['bySchool']): any {
 }
 
 export function findJobId (fixtures: IFixture[]): string {
-  const fixture = fixtures.find(fixture => fixture['job_no.'] !== null && fixture['job_no.'] !== '')
+  const fixture = fixtures.find(fixture => fixture['job_number'] !== null && fixture['job_number'] !== '')
   if (fixture === undefined) return 'no-id'
-  return fixture['job_no.']
+  return fixture['job_number']
 }
 
 export function findCoordinates (fixtures: IFixture[]): [number, number] | null {
-  const fixture = fixtures.find(fixture => fixture.x !== null && fixture.y !== null)
+  const fixture = fixtures.find(fixture => fixture.geometry !== null)
   if (fixture === undefined) return null
-  return [Number(fixture.x), Number(fixture.y)]
+  return fixture.geometry.coordinates
 }
 
-function getColor(fixtures: Fixtures) {
+function getColor(fixtures: IFixture[]) {
   return getColorForStatus(getProgress(fixtures))
 }
 
@@ -76,7 +76,7 @@ function getColor(fixtures: Fixtures) {
  * In Progress: ≥1 fixture.date_replaced != null AND not all fixtures.released_for_unrestricted_use == true
  * Not Started: 0 fixtures.date_replaced != null
  */
-export function getProgress(fixtures: Fixtures): ProgressStatus {
+export function getProgress(fixtures: IFixture[]): ProgressStatus {
   // if (fixtures[0].school === 'Waihee Elementary') debugger
   let notStarted = true
   let completedFixtures = 0
@@ -84,10 +84,10 @@ export function getProgress(fixtures: Fixtures): ProgressStatus {
     const fixture = fixtures[i]
     if (notStarted && fixture.date_replaced !== null) {
       notStarted = false
-    } else if (!notStarted && fixture['released_for_unrestricted_use?'] !== 'Yes') {
+    } else if (!notStarted && fixture.fixture_status === null) {
       return 'In Progress'
     }
-    if (fixture['released_for_unrestricted_use?'] === 'Yes') {
+    if (fixture.fixture_status === 'flush_for_drinking' || fixture.fixture_status === 'unrestricted') {
       completedFixtures += 1
     }
   }

@@ -1,16 +1,13 @@
-import { ProgressStatus } from '@/Contexts/DataContext'
-import TestData from '@/data.json'
+import { IFixture, ProgressStatus } from '@/Contexts/DataContext'
 
-type Fixtures = typeof TestData.data
-
-function getNumCompleteFixtures (fixtures: Fixtures): number {
+function getNumCompleteFixtures (fixtures: IFixture[]): number {
   return fixtures.reduce((sum, fixture) =>
-    fixture['released_for_unrestricted_use?'] === 'Yes' ? ++sum : sum, 0)
+    fixture.fixture_status !== null ? ++sum : sum, 0)
 }
 
-function getNumInProgressFixtures (fixtures: Fixtures): number {
+function getNumInProgressFixtures (fixtures: IFixture[]): number {
   return fixtures.reduce((sum, fixture) =>
-    fixture['released_for_unrestricted_use?'] !== 'Yes' &&
+    fixture.fixture_status === null &&
     fixture.date_replaced !== null
       ? ++sum : sum, 0)
 }

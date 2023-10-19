@@ -2,8 +2,8 @@ import React, { PropsWithChildren, createContext, useContext, useEffect, useStat
 import _ from 'lodash'
 import TestData from '@/data.json'
 import { getProgress } from '@/Services/MapLayer'
+import API from '@/Services/API'
 
-export type Fixtures = typeof TestData.data
 export type SchoolKey = string
 export type ProgressStatus = 'Not Started' | 'In Progress' | 'Completed'
 
@@ -14,36 +14,67 @@ export interface IAPIResponse {
   data: IFixture[]
 }
 
+// export interface IFixture {
+//   'school': string
+//   'district': string
+//   'island': string
+//   'job_no.': string
+//   'first_draw_sample_number': any | null
+//   'flush_sample_number': any | null
+//   'sample_point_name': string
+//   'source_id': string
+//   'initial_result_ppb': string
+//   'room_no': string
+//   'source_type': string
+//   'ada_compliant?': string
+//   'date_replacement_scheduled': any | null
+//   'date_replaced': any | null
+//   'confirmation_sample_collection_date': any | null
+//   'date_results_received': any | null
+//   '': any | null
+//   'confirmation_result_ppb': any | null
+//   'flush_result_ppb': any | null
+//   'released_for_unrestricted_use?': any | null
+//   'flush_30_seconds_if_used_for_drinking': any | null
+//   'non-potable_use_only': any | null
+//   'comments': any | null
+//   'school_notified': any | null
+//   'original_fixtures_photo_url': string
+//   'replaced_fixtures_photo_url': any | null
+//   'x': string
+//   'y': string
+//   [key: string]: any
+// }
+
 export interface IFixture {
-  'school': string
-  'district': string
-  'island': string
-  'job_no.': string
-  'first_draw_sample_number': any | null
-  'flush_sample_number': any | null
-  'sample_point_name': string
-  'source_id': string
-  'initial_result_ppb': string
-  'room_no': string
-  'source_type': string
-  'ada_compliant?': string
-  'date_replacement_scheduled': any | null
-  'date_replaced': any | null
-  'confirmation_sample_collection_date': any | null
-  'date_results_received': any | null
-  '': any | null
-  'confirmation_result_ppb': any | null
-  'flush_result_ppb': any | null
-  'released_for_unrestricted_use?': any | null
-  'flush_30_seconds_if_used_for_drinking': any | null
-  'non-potable_use_only': any | null
-  'comments': any | null
-  'school_notified': any | null
-  'original_fixtures_photo_url': string
-  'replaced_fixtures_photo_url': any | null
-  'x': string
-  'y': string
-  [key: string]: any
+  'id': string
+  'geometry': {
+      'type': 'Point',
+      'coordinates': [number, number]
+  },
+    'ada_compliant': string | null
+    'comments': string | null
+    'confirmation_sample_collection_date': string | null
+    'date_replaced': string | null
+    'date_replacement_scheduled': string | null
+    'date_results_received': string | null
+    'date_school_notified': string | null
+    'district': string
+    'first_draw_sample_number': string | null
+    'fixture_status': 'flush_for_drinking' | 'unrestricted' | 'non_potable' | null
+    'flush_sample_number': string | null
+    'island': string
+    'job_number': string
+    'lead_ppb_confirmation': number | null
+    'lead_ppb_flush': number | null
+    'lead_ppb_initial': number | null
+    'original_fixtures_photo_url': string | null
+    'replaced_fixtures_photo_url': string | null
+    'room_number': string | null
+    'sample_point_name': string | null
+    'school': string
+    'source_id': string | null
+    'source_type': string
 }
 
 interface IState {
@@ -121,9 +152,13 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
   const fetchData = () => delay(750, async () => TestData)
 
   useEffect(() => {
-    fetchData()
-      .then(data => setData(data))
-      .catch(error => console.error(error))
+    API.getParsedFeatures().then(d => {
+      console.log(d)
+      if (d !== undefined) setData(d)
+    }).catch(error => console.error(error))
+    // fetchData()
+    //   .then(data => setData(data))
+    //   .catch(error => console.error(error))
   }, [])
 
   useEffect(() => {
@@ -205,16 +240,6 @@ export default function DataContextProvider ({ children }: PropsWithChildren) {
   function getSchoolStatus (school: string): ProgressStatus {
     if (data === null) return 'Not Started'
     return getProgress(data.bySchool[school])
-  }
-
-  function getCleanTextFilter (text: string) {
-    return text.trim().toLowerCase()
-  }
-
-  function schoolMatchesTextSearch (text: string, fixture: IFixture) {
-    return fixture.school.toLowerCase().includes(text) ||
-      fixture.district.toLowerCase().includes(text) ||
-      fixture.island.toLowerCase().includes(text)
   }
 
   return (
