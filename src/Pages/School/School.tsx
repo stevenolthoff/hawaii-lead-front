@@ -4,7 +4,7 @@ import useEscapeKey from '@/Hooks/useEscapeKey'
 import BubbleLegend from '@/Components/BubbleLegend'
 import StackedBarChart from '@/Components/StackedBarChart'
 import { getNumCompleteFixtures, getNumInProgressFixtures } from '@/Services/SchoolStatus'
-import { XMarkIcon, CheckIcon } from '@heroicons/react/24/solid'
+import { XMarkIcon, CheckIcon, EllipsisHorizontalIcon } from '@heroicons/react/24/solid'
 import { IFixture, ProgressStatus } from '@/Contexts/DataContext'
 import { DateTime } from 'luxon'
 import { useSchoolContext } from '@/Contexts/SchoolContext'
@@ -88,7 +88,9 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
     let FinalIcon: ReactElement = <div></div>
     if (filled && i === data.length - 1) {
       if (d.status === 'Completed') {
-        FinalIcon = <CheckIcon className='text-slate-100' style={{ visibility: filled && i === data.length - 1 ? 'visible' : 'hidden' }}/>
+        FinalIcon = <CheckIcon className='text-slate-100'/>
+      } else {
+        FinalIcon = <EllipsisHorizontalIcon className='text-slate-100' />
       }
     }
     return (
@@ -155,6 +157,28 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
     if (fixture_status === 'flush_for_drinking' || fixture_status === 'non_potable') return 'In Progress'
     return 'Not Started'
   }
+  const MobileStatus = ({ fixture }: { fixture: IFixture }) => {
+    const filled = bubbleIsFilled(fixture, 'fixture_status')
+    if (filled && fixture.fixture_status === 'unrestricted') {
+      return (
+        <div className='w-4 h-4 bg-green-500 rounded text-white'>
+          <CheckIcon width='1rem' height='1rem' />
+        </div>
+      )
+    } else if (filled && fixture.fixture_status === 'flush_for_drinking' || fixture.fixture_status === 'non_potable') {
+      return (
+        <div className='w-4 h-4 bg-yellow-500 rounded text-white'>
+          <EllipsisHorizontalIcon width='1rem' height='1rem' />
+        </div>
+      )
+    } else {
+      return (
+        <div className='w-4 h-4 bg-red-500 rounded text-white'>
+          <XMarkIcon width='1rem' height='1rem' />
+        </div>
+      )
+    }
+  }
   const expandedClassName = 'text-xs text-slate-800 font-semibold'
   const dividerClassName = 'flex justify-center text-slate-300 pb-2 font-normal'
   const expandedTextClassName = '-translate-x-1/2 text-right'
@@ -176,16 +200,7 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
         {
           isMobile ?
             <div className='group-hover:bg-slate-200 group-hover:cursor-pointer text-center flex w-full h-full justify-center items-center'>
-              {
-                bubbleIsFilled(fixture, 'fixture_status') ?
-                  <div className='w-4 h-4 bg-green-500 rounded text-white'>
-                    <CheckIcon width='1rem' height='1rem' />
-                  </div>
-                  :
-                  <div className='w-4 h-4 bg-red-500 rounded text-white'>
-                    <XMarkIcon width='1rem' height='1rem' />
-                  </div>
-              }
+              <MobileStatus fixture={fixture}></MobileStatus>
             </div>:
             <Stepper
               key={`fixture-${id}-stepper`}
