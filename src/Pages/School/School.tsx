@@ -4,8 +4,8 @@ import useEscapeKey from '@/Hooks/useEscapeKey'
 import BubbleLegend from '@/Components/BubbleLegend'
 import StackedBarChart from '@/Components/StackedBarChart'
 import { getNumCompleteFixtures, getNumInProgressFixtures } from '@/Services/SchoolStatus'
-import { XMarkIcon, CheckIcon } from '@heroicons/react/20/solid'
-import { IFixture } from '@/Contexts/DataContext'
+import { XMarkIcon, CheckIcon } from '@heroicons/react/24/solid'
+import { IFixture, ProgressStatus } from '@/Contexts/DataContext'
 import { DateTime } from 'luxon'
 import { useSchoolContext } from '@/Contexts/SchoolContext'
 import { useNavigate } from 'react-router-dom'
@@ -20,7 +20,8 @@ interface IStepperProps {
   className?: string
   data: {
     tooltip?: string,
-    filled: boolean
+    filled: boolean,
+    status?: ProgressStatus
   }[]
 }
 
@@ -40,8 +41,11 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
   const filledStyle = {
     backgroundColor: yellow500
   }
-  const completelyFilledStyle = {
+  const fullAndCompleteStyle = {
     backgroundColor: green500
+  }
+  const fullAndInProgressStyle = {
+    backgroundColor: yellow500
   }
   const steps = data.map((d, i) => {
     const filled = completelyFilled || (indexOfFinalFilled !== undefined && i <= indexOfFinalFilled)
@@ -55,11 +59,20 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
       rightLineStyle = filledStyle
     }
     if (completelyFilled) {
-      leftLineStyle = completelyFilledStyle
-      rightLineStyle = completelyFilledStyle
-      bubbleStyle = {
-        ...bubbleStyle,
-        ...completelyFilledStyle
+      if (data.at(-1)?.status === 'In Progress') {
+        leftLineStyle = fullAndInProgressStyle
+        rightLineStyle = fullAndInProgressStyle
+        bubbleStyle = {
+          ...bubbleStyle,
+          ...fullAndInProgressStyle
+        }
+      } else {
+        leftLineStyle = fullAndCompleteStyle
+        rightLineStyle = fullAndCompleteStyle
+        bubbleStyle = {
+          ...bubbleStyle,
+          ...fullAndCompleteStyle
+        }
       }
     } else if (filled) {
       leftLineStyle = filledStyle
@@ -72,6 +85,12 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
         height: '1.4rem'
       }
     }
+    let FinalIcon: ReactElement = <div></div>
+    if (filled && i === data.length - 1) {
+      if (d.status === 'Completed') {
+        FinalIcon = <CheckIcon className='text-slate-100' style={{ visibility: filled && i === data.length - 1 ? 'visible' : 'hidden' }}/>
+      }
+    }
     return (
       <div
         key={`stepper-${id}-step-${i}`}
@@ -80,7 +99,7 @@ const Stepper = ({ id, data, className }: IStepperProps): ReactElement => {
         
         <div className='absolute w-1/2 h-0.5 right-1/2 shadow-inner' style={{ visibility: i === 0 ? 'hidden' : 'visible', ...leftLineStyle }}></div>
         <div className='relative rounded-full w-4 h-4 z-20 shadow-inner border bg-slate-100' style={bubbleStyle}>
-          <CheckIcon className='text-slate-100' style={{ visibility: filled && i === data.length - 1 ? 'visible' : 'hidden' }}/>
+          {FinalIcon}
         </div>
         <div className='absolute w-1/2 h-0.5 left-1/2 shadow-inner' style={{ visibility: i === data.length - 1 ? 'hidden' : 'visible', ...rightLineStyle }}></div>
       </div>
@@ -105,33 +124,40 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
     return fixture[key] !== null && String(fixture[key]).toLowerCase() !== 'no'
   }
   const getFormattedDate = (value: string | null) => {
-    return value === null ? <p className='text-slate-300 text-center'>No Data</p> : DateTime.fromISO(value).toLocaleString({ dateStyle: 'medium' })
+    return value === null ? <p className='text-slate-300 text-right'>No Data</p> : DateTime.fromISO(value).toLocaleString({ dateStyle: 'medium' })
   }
   const getReleasedTooltip = (fixture: IFixture): string | ReactElement => {
     let text = ''
     const { fixture_status } = fixture
-    if (fixture_status === null) return <p className='text-slate-300 text-center'>No Data</p>
+    if (fixture_status === null) return <p className='text-slate-300 text-left'>No Data</p>
     const { lead_ppb_flush, lead_ppb_confirmation } = fixture
     if (fixture_status === 'flush_for_drinking') {
-      text += 'Released?: Flush for 30 seconds'
+      text += '*Flush 30 seconds\nbefore use.'
     } else if (fixture_status === 'unrestricted') {
-      text += 'Released for unrestricted use'
+      text += 'Unrestricted Use'
     } else if (fixture_status === 'non_potable') {
-      text += 'Non-Potable Use Only'
+      text += '*Non-Potable Only'
     }
     if (lead_ppb_flush !== null) {
-      text += `\nFlush Test: ${lead_ppb_flush} PPB`
+      text += `\nFlush Test 1: ${lead_ppb_flush} PPB`
     }
     if (lead_ppb_confirmation !== null) {
-      text += `\nConfirmation Test: ${lead_ppb_confirmation} PPB`
+      text += `\nFlush Test 2: ${lead_ppb_confirmation} PPB`
     }
     return text
   }
   const onClickRow = () => {
     setExpand(!expand)
   }
+  const getFinalBubbleStatus = (fixture: IFixture): ProgressStatus => {
+    const { fixture_status } = fixture
+    if (fixture_status === 'unrestricted') return 'Completed'
+    if (fixture_status === 'flush_for_drinking' || fixture_status === 'non_potable') return 'In Progress'
+    return 'Not Started'
+  }
   const expandedClassName = 'text-xs text-slate-800 font-semibold'
   const dividerClassName = 'flex justify-center text-slate-300 pb-2 font-normal'
+  const expandedTextClassName = '-translate-x-1/2 text-right'
   return (
     <div key={`row-${id}`} className='contents'>
       <div className='group contents' onClick={onClickRow}>
@@ -179,7 +205,8 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
                   filled: bubbleIsFilled(fixture, 'date_results_received')
                 },
                 {
-                  filled: bubbleIsFilled(fixture, 'fixture_status')
+                  filled: bubbleIsFilled(fixture, 'fixture_status'),
+                  status: getFinalBubbleStatus(fixture)
                 }
               ]}
             />
@@ -202,19 +229,19 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
             <div></div>
             <div className={expandedClassName}>
               <div className={dividerClassName}>|</div>
-              {getFormattedDate(fixture['date_replacement_scheduled'])}
+              <div className={expandedTextClassName}>{getFormattedDate(fixture['date_replacement_scheduled'])}</div>
             </div>
             <div className={expandedClassName}>
               <div className={dividerClassName}>|</div>
-              {getFormattedDate(fixture['date_replaced'])}
+              <div className={expandedTextClassName}>{getFormattedDate(fixture['date_replaced'])}</div>
             </div>
             <div className={expandedClassName}>
               <div className={dividerClassName}>|</div>
-              {getFormattedDate(fixture['confirmation_sample_collection_date'])}
+              <div className={expandedTextClassName}>{getFormattedDate(fixture['confirmation_sample_collection_date'])}</div>
             </div>
             <div className={expandedClassName}>
               <div className={dividerClassName}>|</div>
-              {getFormattedDate(fixture['date_results_received'])}
+              <div className={expandedTextClassName}>{getFormattedDate(fixture['date_results_received'])}</div>
             </div>
             <div className={expandedClassName}>
               <div className={dividerClassName}>|</div>
