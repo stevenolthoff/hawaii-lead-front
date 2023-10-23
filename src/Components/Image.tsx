@@ -6,8 +6,9 @@ interface IImageProps {
 const Image = ({ src }: IImageProps) => {
   const [successfullyLoaded, setSuccessfullyLoaded] = useState<boolean | undefined>(undefined)
   const showLoadingState = src === null || successfullyLoaded === false || successfullyLoaded === undefined
-  const onClick = () => {
+  const onClick = (event: any) => {
     if (successfullyLoaded && src !== undefined && src !== null && window !== undefined && window !== null) {
+      event.stopPropagation()
       window.open(src, '_blank')!.focus()
     }
   }
@@ -31,7 +32,7 @@ const Image = ({ src }: IImageProps) => {
         src={src}
         onLoad={() => { setSuccessfullyLoaded(true) }}
         onError={() => { setSuccessfullyLoaded(false) }}
-        onClick={onClick}
+        onClick={event => onClick(event)}
       />
     </div>
   )
