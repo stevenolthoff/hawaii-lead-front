@@ -37,13 +37,17 @@ interface Feature {
 }
 
 export default class API {
+  static PROD_URL = 'https://stage-hlww-features.srv.axds.co/collections/public.fixtures/items'
+  static DEV_URL = 'https://stage-hlww-features.srv.axds.co/collections/public.fixtures/items'
+  static API_URL = process.env.NODE_ENV === 'production' ? this.PROD_URL : this.DEV_URL
   public static async getFeatures () {
+    console.log('env', process.env.NODE_ENV)
     const limit = 1000
     let offset = 0
     const features: Feature[] = []
     let hasMore = true
     while (hasMore) {
-      const response = await axios.get('https://stage-hlww-features.srv.axds.co/collections/public.fixtures/items', {
+      const response = await axios.get(this.API_URL, {
         params: {
           limit,
           offset

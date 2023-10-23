@@ -126,12 +126,12 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
     return fixture[key] !== null && String(fixture[key]).toLowerCase() !== 'no'
   }
   const getFormattedDate = (value: string | null) => {
-    return value === null ? <p className='text-slate-300 text-sm lg:text-right'>No Data</p> : DateTime.fromISO(value).toLocaleString({ dateStyle: 'medium' })
+    return value === null ? <p className='text-slate-800 text-sm lg:text-right'>No Data</p> : DateTime.fromISO(value).toLocaleString({ dateStyle: 'medium' })
   }
   const getReleasedTooltip = (fixture: IFixture): string | ReactElement => {
     let text = ''
     const { fixture_status } = fixture
-    if (fixture_status === null) return <p className='text-slate-300 text-left'>No Data</p>
+    if (fixture_status === null) return <p className='text-slate-800 text-left'>No Data</p>
     const { lead_ppb_flush, lead_ppb_confirmation } = fixture
     if (fixture_status === 'flush_for_drinking') {
       text += '*Flush 30 seconds\nbefore use.'
@@ -187,13 +187,13 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
       <div className='group contents' onClick={onClickRow}>
         <div
           key={`fixture-${id}-room-no`}
-          className='text-lg md:text-sm group-hover:bg-slate-200 group-hover:cursor-pointer p-2'
+          className='text-md md:text-sm group-hover:bg-slate-200 group-hover:cursor-pointer p-2 overflow-hidden'
         >
           {fixture.room_number}
         </div>
         <div
           key={`fixture-${id}-source-type`}
-          className='text-lg md:text-sm break-word group-hover:bg-slate-200 group-hover:cursor-pointer p-2'
+          className='text-md md:text-sm break-word group-hover:bg-slate-200 group-hover:cursor-pointer p-2 overflow-hidden'
         >
           {getFixtureLabel(fixture.source_type)}
         </div>
@@ -288,7 +288,7 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
               </div>
               <div className=''>
                 <div className='text-lg font-semibold'>Final Results</div>
-                <div><pre className='font-sans'>{getReleasedTooltip(fixture)}</pre></div>
+                <div>{getReleasedTooltip(fixture)}</div>
               </div>
             </div>
           </div> :
@@ -315,7 +315,7 @@ const DesktopTable = ({ selectedSchool }: { selectedSchool: ISchool }) => {
         <div className={tableHeaderClassName + ' text-center'}>Replacement Photo</div>
 
         {
-          _.sortBy(selectedSchool.fixtures, ['room_no', 'source_type', 'asc', 'asc'])
+          _.sortBy(selectedSchool.fixtures, ['room_number', 'source_type', 'asc', 'asc'])
             .map((fixture, i) => (
               <Row key={i} id={`${i}`} fixture={fixture} isMobile={false} />
             ))
