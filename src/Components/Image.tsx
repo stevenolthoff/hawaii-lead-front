@@ -24,7 +24,7 @@ const Image = ({ src }: IImageProps) => {
       >
       </div>
       <img
-        className='w-full h-full rounded-md hover:border-blue-500 hover:border-2 object-cover'
+        className='w-full h-full rounded-md hover:border-blue-500 hover:border-2 object-cover hover:cursor-pointer'
         style={{
           visibility: successfullyLoaded ? 'visible' : 'hidden'
         }}

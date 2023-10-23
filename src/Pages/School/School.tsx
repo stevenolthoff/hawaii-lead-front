@@ -233,7 +233,7 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
               key={`fixture-${id}-photo`}
               className='text-sm break-word group-hover:bg-slate-200 group-hover:cursor-pointer p-2 flex justify-center'
             >
-              <Image src={fixture.replaced_fixtures_photo_url ?? undefined} />
+              <Image src={`https://files.axds.co/portals/hawaii_wiin/fixture_photos/${fixture.replaced_fixtures_photo_url}` ?? undefined} />
             </div>
         }
       </div>

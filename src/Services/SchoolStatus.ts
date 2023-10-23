@@ -8,7 +8,12 @@ function getNumCompleteFixtures (fixtures: IFixture[]): number {
 function getNumInProgressFixtures (fixtures: IFixture[]): number {
   return fixtures.reduce((sum, fixture) =>
     fixture.fixture_status === null &&
-    fixture.date_replaced !== null
+    (
+      fixture.date_replaced !== null ||
+      fixture.date_replacement_scheduled !== null ||
+      fixture.confirmation_sample_collection_date !== null ||
+      fixture.date_results_received !== null
+    )
       ? ++sum : sum, 0)
 }
 
