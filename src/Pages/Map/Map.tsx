@@ -10,9 +10,11 @@ import School from '@/Pages/School/School'
 import { useSchoolContext } from '@/Contexts/SchoolContext'
 import { useNavigate, useParams } from 'react-router-dom'
 import { getSchoolIdFromSlug, getSlugFromSchoolId } from '@/Services/SchoolId'
-import { useWindowSize } from 'usehooks-ts'
+import { useLocalStorage, useWindowSize } from 'usehooks-ts'
 import { ListBulletIcon, MapIcon } from '@heroicons/react/24/outline'
+import { InformationCircleIcon } from '@heroicons/react/24/solid'
 import { useMapPreviewContext } from '@/Contexts/MapPreviewContext'
+import InfoPopup from '@/Components/InfoPopup'
 
 interface IMobileViewToggleProps {
   show: boolean
@@ -57,6 +59,8 @@ const Map = () => {
   // const [selectEvent, setSelectEvent] = useState<ILayerQueryEvent | null>(null)
   // const [popupCoordinates, setPopupCoordinates] = useState<[number, number] | [undefined, undefined]>([undefined, undefined])
   // const [popupSchool, setPopupSchool] = useState<ISchool | undefined>(undefined)
+  const [showTutorial, setShowTutorial] = useState(false)
+  const [hasSeenTutorial, setHasSeenTutorial] = useLocalStorage('hasSeenTutorial', false)
   const { width } = useWindowSize()
   const [isMobileView, setIsMobileView] = useState(width < DESKTOP_WIDTH_PX)
   const [showViewToggle, setShowViewToggle] = useState(width < DESKTOP_WIDTH_PX)
@@ -169,11 +173,14 @@ const Map = () => {
   return (
     <div className='w-full max-w-full h-full max-h-full flex flex-col'>
       <div className='h-[8rem] max-h-[8rem] lg:h-[6rem] lg:max-h-[6rem] flex flex-col divide-y border-b border-slate-200'>
-        <div className='flex px-4 py-2 w-full text-center'>
+        <div className='flex px-4 py-2 w-full justify-between items-center'>
           <a href='https://health.hawaii.gov/heer/environmental-health/highlighted-projects/WIIN/'>
             <img src='/DOH-Logo-with-text-circling.png' width='40' />
           </a>
-          <div className='px-4 py-2 font-semibold text-slate-800 text-center w-full'>Hawaii Lead Water Monitor</div>
+          <div className='px-4 py-2 font-semibold text-slate-800 text-center'>Hawaii Lead Water Monitor</div>
+          <div onClick={() => setShowTutorial(true)}>
+            <InformationCircleIcon className='w-8 h-8 text-blue-500 hover:text-blue-800 hover:cursor-pointer' />
+          </div>
         </div>
         <div className='max-w-full h-full py-2 lg:py-1 no-scrollbar grow overflow-x-scroll sm:overflow-visible'><MapFilters /></div>
       </div>
@@ -216,6 +223,14 @@ const Map = () => {
         show={showViewToggle}
         onToggle={setView}
       />
+      {
+        showTutorial || !hasSeenTutorial ?
+          <InfoPopup onClose={() => {
+            setShowTutorial(false)
+            setHasSeenTutorial(true)
+          }} /> :
+          <></>
+      }
     </div>
   )
 }
