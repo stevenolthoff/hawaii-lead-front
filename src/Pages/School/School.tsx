@@ -126,7 +126,7 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
     return fixture[key] !== null && String(fixture[key]).toLowerCase() !== 'no'
   }
   const getFormattedDate = (value: string | null) => {
-    return value === null ? <p className='text-slate-300 text-right'>No Data</p> : DateTime.fromISO(value).toLocaleString({ dateStyle: 'medium' })
+    return value === null ? <p className='text-slate-300 text-sm lg:text-right'>No Data</p> : DateTime.fromISO(value).toLocaleString({ dateStyle: 'medium' })
   }
   const getReleasedTooltip = (fixture: IFixture): string | ReactElement => {
     let text = ''
