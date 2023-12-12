@@ -134,17 +134,17 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
     if (fixture_status === null) return <p className='text-slate-800 text-left'>No Data</p>
     const { lead_ppb_flush, lead_ppb_confirmation } = fixture
     if (fixture_status === 'flush_for_drinking') {
-      text += '*Flush 30 seconds\nbefore use.'
+      text += '*Flush 30 seconds\nbefore drinking.'
     } else if (fixture_status === 'unrestricted') {
       text += 'Unrestricted Use'
     } else if (fixture_status === 'non_potable') {
       text += '*Non-Potable Only'
     }
-    if (lead_ppb_flush !== null) {
-      text += `\nFlush Test 1: ${lead_ppb_flush} PPB`
-    }
     if (lead_ppb_confirmation !== null) {
-      text += `\nFlush Test 2: ${lead_ppb_confirmation} PPB`
+      text += `\nFirst Draw < ${lead_ppb_confirmation} PPB`
+    }
+    if (lead_ppb_flush !== null) {
+      text += `\nFlush Test < ${lead_ppb_flush} PPB`
     }
     return text
   }
@@ -279,7 +279,7 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
                 <div>{getFormattedDate(fixture['date_replaced'])}</div>
               </div>
               <div className=''>
-                <div className='text-lg font-semibold'>Confirmation Collection Date</div>
+                <div className='text-lg font-semibold'>First Draw Date</div>
                 <div>{getFormattedDate(fixture['confirmation_sample_collection_date'])}</div>
               </div>
               <div className=''>
@@ -287,7 +287,7 @@ const Row = ({ fixture, id, isMobile }: IRowProps) => {
                 <div>{getFormattedDate(fixture['date_results_received'])}</div>
               </div>
               <div className=''>
-                <div className='text-lg font-semibold'>Final Results</div>
+                <div className='text-lg font-semibold'>Flush Test Results</div>
                 <div>{getReleasedTooltip(fixture)}</div>
               </div>
             </div>
