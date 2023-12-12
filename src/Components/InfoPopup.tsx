@@ -17,18 +17,22 @@ const InfoPopup = ({ onClose }: { onClose: () => void }) => {
         <div className='overflow-y-scroll w-full h-full p-4 no-scrollbar flex flex-col justify-between gap-8'>
           <div>
             <p>
-              The State of Hawaii, Department of Health is replacing water infrastructure in schools across the state.
-              In this tool, you can track the replacement status of water fixtures.
-              Only fixtures that tested with a lead content greater than 5 parts per billion (PPB) are listed.
+              The State of Hawaii Departments of Health and Education are 
+              replacing water infrastructure in schools across the state.
+              In this tool, you can track the replacement status of water
+              fixtures.
+              Only fixtures that tested with an initial lead content greater
+              than 5 parts per billion (PPB) are listed.
             </p>
             <br/>
             <div>
-              <p className='font-semibold'>Fixture Status</p>
+              <p className='font-semibold'>Meaning of Fixture Statuses</p>
               <ol className='list-none list-inside'>
                 <li><span className='text-slate-100 bg-red-500 rounded-lg px-2'>Not Started</span> indicates fixtures that are in need of replacement, but have not yet begun the replacement process.</li>
-                <li><span className='text-slate-100 bg-yellow-500 rounded-lg px-2'>In Progress</span> means that a replacement is underway.</li>
+                <li><span className='text-slate-100 bg-yellow-500 rounded-lg px-2'>In Progress</span> indicates that a replacement is underway.</li>
                 <li><span className='text-slate-100 bg-green-500 rounded-lg px-2'>Completed</span> indicates a completed replacement. 
-                Post-replacement, some fixtures may be intended for only non-potable use, or may require 30 seconds of flushing prior to use. 
+                After replacement, some fixtures may be listed for non-potable use only. 
+                Other fixtures will require 30 seconds of flushing prior to drinking.
                 This information and more is listed under each fixture.</li>
               </ol>
             </div>
