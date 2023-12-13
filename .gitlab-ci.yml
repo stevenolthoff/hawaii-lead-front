@@ -68,3 +68,11 @@ deploy_app:
     - main
   script:
     - aps apps-stage hawaii-lead
+
+deploy_prod:
+  stage: deploy
+  environment: production
+  only:
+    - tags
+  script:
+    - aps apps-prod hawaii-lead
