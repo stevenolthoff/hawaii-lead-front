@@ -37,7 +37,7 @@ interface Feature {
 }
 
 export default class API {
-  static PROD_URL = 'https://stage-hlww-features.srv.axds.co/collections/public.fixtures/items'
+  static PROD_URL = 'https://hlww-features.srv.axds.co/collections/public.fixtures/items'
   static DEV_URL = 'https://stage-hlww-features.srv.axds.co/collections/public.fixtures/items'
   static API_URL = process.env.NODE_ENV === 'production' ? this.PROD_URL : this.DEV_URL
   public static async getFeatures () {
